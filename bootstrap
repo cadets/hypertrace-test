@@ -1,0 +1,5 @@
+#!/bin/sh
+
+installer=$(which chicken-install)
+
+$installer -s miscmacros symbol-utils srfi-1 test fmt
