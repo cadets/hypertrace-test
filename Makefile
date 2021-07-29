@@ -10,6 +10,7 @@ SRCS := $(shell find $(SRC_DIR) -name *.scm -exec basename {} \;)
 OBJS := $(patsubst %.scm,$(BUILD_DIR)/%.o,$(SRCS))
 
 $(PROGRAM): $(OBJS)
+	@echo "LD     $(PROGRAM)"
 	@$(CSC) $(CSC_FLAGS) $(OBJS) -o $(BUILD_DIR)/$(PROGRAM)
 
 $(BUILD_DIR)/%.o : src/%.scm $(BUILD_DIR)
@@ -17,11 +18,11 @@ $(BUILD_DIR)/%.o : src/%.scm $(BUILD_DIR)
 	@$(CSC) -c $(CSC_FLAGS) $< -o $@
 
 $(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
 	@echo "MK     $(BUILD_DIR)"
+	@mkdir -p $(BUILD_DIR)
 
 clean:
-	@rm -rf $(BUILD_DIR)
 	@echo "RM     $(BUILD_DIR)"
+	@rm -rf $(BUILD_DIR)
 
 cleandir distclean realclean: clean
