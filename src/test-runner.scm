@@ -2,14 +2,15 @@
 
 (declare (uses hypertrace-test))
 
-(import scheme)
-(import chicken.base)
-(import chicken.io)
-(import chicken.string)
-
-(import srfi-1)
-
-(import test)
+(import scheme
+	
+	chicken.base
+	chicken.io
+	chicken.string
+	
+	srfi-1
+	
+	test)
 
 ;;
 ;; Reads a file line by line and returns a string with the contents
