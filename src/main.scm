@@ -26,3 +26,15 @@
 		   '((unbound-symbol "FAIL")
 		     (name "foo")))))
 
+(test-group "Non-symbols"
+	    (test '(#f "Field string is not a symbol.")
+		  (mk-hypertrace-test '(("string" "FAIL"))))
+	    (test '(#f "Field string is not a symbol.")
+		  (mk-hypertrace-test
+		   '((name "foo")
+		     ("string" "FAIL"))))
+	    (test '(#f "Field string is not a symbol.")
+		  (mk-hypertrace-test
+		   '(("string" "FAIL")
+		     (name "foo")))))
+
