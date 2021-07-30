@@ -64,6 +64,13 @@
 ;; not handled and only the internal procedures are used to manipulate the test,
 ;; things will continue to behave correctly and propagate the error gracefully.
 ;;
+;; Note that mk-hypertrace test also accepts arbitrary procedures and will pass
+;; an argument to them, so if you wish to create an out-of-bound setter that
+;; manipulates the arguments further, you can define a procedure called
+;; hypertrace-test-foo and pass in (foo "...") as one of the arguments. The
+;; end result is that your procedure will get called, and you can extend the
+;; interface as you wish.
+;;
 
 (define (mk-hypertrace-test spec-list)
   (let* ((test
