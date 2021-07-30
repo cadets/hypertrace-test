@@ -23,13 +23,11 @@
 	      (test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
 		    (mk-hypertrace-test '((unbound-symbol "FAIL"))))
 	      (test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
-		    (mk-hypertrace-test
-		     '((name "foo")
-		       (unbound-symbol "FAIL"))))
+		    (mk-hypertrace-test '((name "foo")
+					  (unbound-symbol "FAIL"))))
 	      (test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
-		    (mk-hypertrace-test
-		     '((unbound-symbol "FAIL")
-		       (name "foo")))))
+		    (mk-hypertrace-test '((unbound-symbol "FAIL")
+					  (name "foo")))))
 
   (test-group "Non-symbols"
 	      (test '(#f "Field string is not a symbol.")
