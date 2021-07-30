@@ -53,3 +53,5 @@
 				      "not a procedure in the environment.")))
 		  (mk-hypertrace-test '((nonproc "FAIL")
 					(name "foo")))))
+
+(bare-run-test (mk-hypertrace-test '((name "Bare-run test"))))
