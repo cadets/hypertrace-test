@@ -9,9 +9,8 @@
 
 (define (main args)
   (test-group "Field tests"
-	      (define test-test (mk-hypertrace-test
-				 '((name "Foo")
-				   (expected-out "Bar"))))
+	      (define test-test (mk-hypertrace-test '((name "Foo")
+						      (expected-out "Bar"))))
 
 	      (test "Foo" (hypertrace-test-name test-test))
 	      (test "Bar" (hypertrace-test-expected-out test-test))
