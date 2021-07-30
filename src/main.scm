@@ -6,6 +6,7 @@
 (declare (uses hypertrace-test-runner))
 (declare (uses hypertrace-test))
 
+(define hypertrace-test-nonproc 'non-proc)
 
 (define (main args)
   (test-group "Field tests"
@@ -44,7 +45,6 @@
 		       (name "foo")))))
 
 
-  (define hypertrace-test-nonproc 'non-proc)
   (test-group "Non-procedures"
 	      (test `(#f ,(eval (string-append "Field hypertrace-test-nonproc is "
 					       "not a procedure in the environment.")))
