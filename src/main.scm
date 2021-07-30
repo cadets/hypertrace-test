@@ -32,13 +32,11 @@
 	      (test '(#f "Field string is not a symbol.")
 		    (mk-hypertrace-test '(("string" "FAIL"))))
 	      (test '(#f "Field string is not a symbol.")
-		    (mk-hypertrace-test
-		     '((name "foo")
-		       ("string" "FAIL"))))
+		    (mk-hypertrace-test '((name "foo")
+					  ("string" "FAIL"))))
 	      (test '(#f "Field string is not a symbol.")
-		    (mk-hypertrace-test
-		     '(("string" "FAIL")
-		       (name "foo")))))
+		    (mk-hypertrace-test '(("string" "FAIL")
+					  (name "foo")))))
 
 
   (test-group "Non-procedures"
