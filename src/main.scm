@@ -15,5 +15,13 @@
 
 (test-group "Unbound inputs"
 	    (test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
-		      (mk-hypertrace-test '((unbound-symbol "FAIL")))))
+		  (mk-hypertrace-test '((unbound-symbol "FAIL"))))
+	    (test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
+		  (mk-hypertrace-test
+		   '((name "foo")
+		     (unbound-symbol "FAIL"))))
+	    (test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
+		  (mk-hypertrace-test
+		   '((unbound-symbol "FAIL")
+		     (name "foo")))))
 

@@ -98,8 +98,8 @@
 				"Field " full-field-name
 				" is not a procedure in the environment."))))
 		  (set! (proc test) value))
-		(list success? ""))))
-	   #t spec-list)))
+		success?)))
+	   '(#t #f) spec-list)))
     (if (car result)
 	test
 	result)))
