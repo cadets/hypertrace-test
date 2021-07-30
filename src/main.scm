@@ -39,3 +39,17 @@
 		   '(("string" "FAIL")
 		     (name "foo")))))
 
+
+(define hypertrace-test-nonproc 'non-proc)
+(test-group "Non-procedures"
+	    (test `(#f ,(eval (string-append "Field hypertrace-test-nonproc is "
+				      "not a procedure in the environment.")))
+		  (mk-hypertrace-test '((nonproc "FAIL"))))
+	    (test `(#f ,(eval (string-append "Field hypertrace-test-nonproc is "
+				      "not a procedure in the environment.")))
+		  (mk-hypertrace-test '((name "foo")
+					(nonproc "FAIL"))))
+	    (test `(#f ,(eval (string-append "Field hypertrace-test-nonproc is "
+				      "not a procedure in the environment.")))
+		  (mk-hypertrace-test '((nonproc "FAIL")
+					(name "foo")))))
