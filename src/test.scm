@@ -1,13 +1,14 @@
 (declare (unit hypertrace-test))
 
-(import chicken.base)
-(import srfi-1)
-(import srfi-17)
-(import fmt)
+(import chicken.base
+	
+	srfi-1
+	srfi-17
+	fmt
 
-(import symbol-utils)
+	symbol-utils
 
-(import miscmacros)
+	miscmacros)
 
 ;;
 ;; Record:
