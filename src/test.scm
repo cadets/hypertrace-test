@@ -71,7 +71,7 @@
 	   #f #f #f 'default-cmp-method 'default-run-method))
 	 (result
 	  (fold
-	   (lambda (spec success?)
+	   (lambda (spec result)
 	     (let* ((field (car spec))
 		    (value (cadr spec))
 		    (full-field-name
@@ -98,7 +98,7 @@
 				"Field " full-field-name
 				" is not a procedure in the environment."))))
 		  (set! (proc test) value))
-		success?)))
+	        result)))
 	   '(#t #f) spec-list)))
     (if (car result)
 	test
