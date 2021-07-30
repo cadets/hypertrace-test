@@ -3,11 +3,12 @@
 (declare (uses hypertrace-test-runner))
 (declare (uses hypertrace-test))
 
-(define test-test (mk-hypertrace-test
-		   '((name "Foo")
-		     (expected-out "Bar"))))
 
 (test-group "Field tests"
+	    (define test-test (mk-hypertrace-test
+			       '((name "Foo")
+				 (expected-out "Bar"))))
+
 	    (test "Foo" (hypertrace-test-name test-test))
 	    (test "Bar" (hypertrace-test-expected-out test-test))
 	    (test #f (hypertrace-test-in-file test-test))
