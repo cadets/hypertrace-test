@@ -1,4 +1,4 @@
-CSC := $(shell which csc)
+CSC := $(shell which csc || which csc5)
 CSC_FLAGS = -O3
 
 PROGRAM := hypertrace-test

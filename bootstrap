@@ -1,5 +1,5 @@
 #!/bin/sh
 
-installer=$(which chicken-install)
+installer=$(which chicken-install || which chicken-install5)
 
 $installer -s miscmacros symbol-utils srfi-1 test fmt args
