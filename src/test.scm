@@ -1,7 +1,6 @@
 (declare (unit hypertrace-test))
 
 (import chicken.base
-	
 	srfi-1
 	srfi-17
 	fmt
@@ -9,6 +8,8 @@
 	symbol-utils
 
 	miscmacros)
+
+(declare (uses hypertrace-edsl))
 
 
 ;;
@@ -45,71 +46,16 @@
 
 
 ;;
-;; A function implementing a simple EDSL for test specification. Error reporting
-;; could be vastly improved, but for now this is sensible enough for us to start
-;; specifying tests.
-;;
-;; Example:
-;;
-;; (mk-hypertrace-test
-;;  '((name "test-interesting-stuff")
-;;    (in-file "/path/to/in-file")
-;;    (expected-out "/path/to/expected-out")
-;;    (cmp-method 'some-function)
-;;    (run-method 'separate-process)))
-;;
-;;
-;; This function can return two things:
-;;   (1) A runnable test;
-;;   (2) A list of two things (#f err-msg).
-;;
-;; The caller should take care to check these values, however if the error is
-;; not handled and only the internal procedures are used to manipulate the test,
-;; things will continue to behave correctly and propagate the error gracefully.
-;;
-;; Note that mk-hypertrace test also accepts arbitrary procedures and will pass
-;; an argument to them, so if you wish to create an out-of-bound setter that
-;; manipulates the arguments further, you can define a procedure called
-;; hypertrace-test-foo and pass in (foo "...") as one of the arguments. The
-;; end result is that your procedure will get called, and you can extend the
-;; interface as you wish.
+;; Make a HyperTrace test record initializer out of the record with the
+;; following default values:
+;;  name         : #f
+;;  in-file      : #f
+;;  expected-out : #f
+;;  cmp-method   : 'default-cmp-method
+;;  run-method   : 'default-run-method
 ;;
 
-(define (mk-hypertrace-test spec-list)
-  (let* ((test
-	  (make-hypertrace-test
-	   #f #f #f 'default-cmp-method 'default-run-method))
-	 (result
-	  (fold
-	   (lambda (spec result)
-	     (let* ((field (car spec))
-		    (value (cadr spec))
-		    (full-field-name
-		     (if (symbol? field)
-			 (symbol-append 'hypertrace-test- field)
-			 #f)))
-	       (let/cc
-		return 
-		(when (eq? full-field-name #f)
-		  (return
-		   (list #f
-			 (fmt #f
-			      "Field " field " is not a symbol."))))
-		(when (unbound? full-field-name)
-		  (return
-		   (list #f
-			 (fmt #f
-			      "Field " full-field-name " is not bound."))))
-		(let ((proc (eval full-field-name)))
-		  (when (not (procedure? proc))
-		    (return
-		     (list #f
-			   (fmt #f
-				"Field " full-field-name
-				" is not a procedure in the environment."))))
-		  (set! (proc test) value))
-	        result)))
-	   '(#t #f) spec-list)))
-    (if (car result)
-	test
-	result)))
+(make-record
+ 'hypertrace-test
+ '(#f #f #f 'default-cmp-method 'default-run-method))
+
