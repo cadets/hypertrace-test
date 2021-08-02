@@ -1,5 +1,6 @@
-(import test
+(import scheme
 	(chicken process-context)
+	test
 	args)
 
 (declare (uses hypertrace-test-runner))
@@ -11,6 +12,9 @@
 (define (main args)
   (receive (options operands)
       (args:parse (args) hypertrace-options)
+
+    (when (alist-ref 'bare options)
+      (print "Running tests in bare mode..."))
     
     (test-group "Field tests"
 		(define test-test (mk-hypertrace-test '((name "Foo")
