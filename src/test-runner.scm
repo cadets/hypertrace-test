@@ -43,6 +43,8 @@
 	 (cmp-method   (hypertrace-test-cmp-method test))
 	 (run-method   (hypertrace-test-run-method test)))
     (test-assert name #t)))
+
+
 ;;
 ;; TODO(dstolfa):
 ;; Runs a test specified as a hypertrace-test record.

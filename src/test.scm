@@ -10,6 +10,7 @@
 
 	miscmacros)
 
+
 ;;
 ;; Record:
 ;;  name         : string; name of the test
@@ -41,6 +42,7 @@
   (run-method hypertrace-test-run-method
 	      (setter hypertrace-test-run-method)) ;(separate-process|same-process)
   )
+
 
 ;;
 ;; A function implementing a simple EDSL for test specification. Error reporting

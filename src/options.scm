@@ -5,6 +5,7 @@
 	(chicken port)
 	args)
 
+
 (define (usage)
   (with-output-to-port (current-error-port)
     (lambda ()
@@ -13,6 +14,7 @@
       (print (args:usage hypertrace-options))
       (print "Report bugs to <ds815@gmx.com> or <ds815@cam.ac.uk>")))
   (exit 1))
+
 
 (define hypertrace-options
   (list
