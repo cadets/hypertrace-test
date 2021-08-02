@@ -9,13 +9,22 @@
 
 (define hypertrace-test-nonproc 'non-proc)
 
+(define hypertrace-test-verbosity 0)
+
 (define (main args)
   (receive (options operands)
       (args:parse (args) hypertrace-options)
 
-    (when (alist-ref 'bare options)
+    (set! hypertrace-test-verbosity
+      (or (alist-ref 'verbose options) 0))
+
+    (when (<= hypertrace-test-verbosity 0)
+      (set! (current-test-verbosity) #f))
+				     
+    (when (and (> hypertrace-test-verbosity 0)
+	       (alist-ref 'bare options))
       (print "Running tests in bare mode..."))
-    
+
     (test-group "Field tests"
 		(define test-test (mk-hypertrace-test '((name "Foo")
 							(expected-out "Bar"))))
