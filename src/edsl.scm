@@ -50,8 +50,7 @@
 
 (define (make-record-initializer rec default)
   `(define (,(symbol-append 'mk- rec) spec-list)
-     (let ((entry
-	    (,(symbol-append 'make- rec) ,@default)))
+     (let ((entry (,(symbol-append 'make- rec) ,@default)))
        (for-each
 	(lambda (spec)
 	  (let* ((field (car spec))
