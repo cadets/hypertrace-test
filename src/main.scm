@@ -7,9 +7,26 @@
 (declare (uses hypertrace-test))
 (declare (uses hypertrace-option-parser))
 
+
+;;
+;; Global variable only used for testing error reporting of the test framework
+;; itself.
+;;
+
 (define hypertrace-test-nonproc 'non-proc)
 
+
+;;
+;; Global variable describing the verbosity at which we will be reporting test
+;; results and program actions to the user.
+;;
+
 (define hypertrace-test-verbosity 0)
+
+
+;;
+;; Main entry point of the program.
+;;
 
 (define (main args)
   (receive (options operands)
