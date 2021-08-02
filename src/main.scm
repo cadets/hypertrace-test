@@ -1,6 +1,6 @@
-(import (test)
+(import test
 	(chicken process-context)
-	(args))
+	args)
 
 (declare (uses hypertrace-test-runner))
 (declare (uses hypertrace-test))
