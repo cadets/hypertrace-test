@@ -17,13 +17,13 @@
 (define hypertrace-options
   (list
    (args:make-option
-    (b bare)    #:none              "Bare run of the test suite")
+    (b bare)    #:none               "Bare run of the test suite")
    
    (args:make-option
-    (V verbose) (optional: "LEVEL") "Verbosity level [default: 1]"
+    (V verbose) (optional: "LEVEL")  "Verbosity level [default: 1]"
     (set! arg (string->number (or arg "1"))))
 
    (args:make-option
-    (h help) #:none                 "Display this help text"
+    (h help)    #:none               "Display this help text"
     (usage))))
 
