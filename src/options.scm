@@ -5,6 +5,10 @@
 	(chicken port)
 	args)
 
+;;
+;; Display usage information about command-line options. These messages are
+;; generated from hypertrace-options.
+;;
 
 (define (usage)
   (with-output-to-port (current-error-port)
@@ -15,6 +19,12 @@
       (print "Report bugs to <ds815@gmx.com> or <ds815@cam.ac.uk>")))
   (exit 1))
 
+;;
+;; Command line option parser.
+;;
+;; NOTE: When adding options, every option should have a long version, while
+;; the short version of the command line option is optional.
+;;
 
 (define hypertrace-options
   (list
