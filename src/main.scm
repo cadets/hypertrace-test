@@ -6,6 +6,7 @@
 (declare (uses hypertrace-test-runner))
 (declare (uses hypertrace-test))
 (declare (uses hypertrace-option-parser))
+(declare (uses hypertrace-stager-loader))
 
 
 ;;
@@ -53,39 +54,44 @@
 		(test 'default-run-method (hypertrace-test-run-method test-test)))
 
     (test-group "Unbound inputs"
-		(test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
-		      (mk-hypertrace-test '((unbound-symbol "FAIL"))))
-		(test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
-		      (mk-hypertrace-test '((name "foo")
-					    (unbound-symbol "FAIL"))))
-		(test '(#f "Field hypertrace-test-unbound-symbol is not bound.")
-		      (mk-hypertrace-test '((unbound-symbol "FAIL")
-					    (name "foo")))))
+		(test-error (mk-hypertrace-test '((unbound-symbol "FAIL"))))
+		(test-error (mk-hypertrace-test '((name "foo")
+						  (unbound-symbol "FAIL"))))
+		(test-error (mk-hypertrace-test '((unbound-symbol "FAIL")
+						  (name "foo")))))
 
     (test-group "Non-symbols"
-		(test '(#f "Field string is not a symbol.")
-		      (mk-hypertrace-test '(("string" "FAIL"))))
-		(test '(#f "Field string is not a symbol.")
-		      (mk-hypertrace-test '((name "foo")
-					    ("string" "FAIL"))))
-		(test '(#f "Field string is not a symbol.")
-		      (mk-hypertrace-test '(("string" "FAIL")
-					    (name "foo")))))
-
+		(test-error (mk-hypertrace-test '(("string" "FAIL"))))
+		(test-error (mk-hypertrace-test '((name "foo")
+						  ("string" "FAIL"))))
+		(test-error (mk-hypertrace-test '(("string" "FAIL")
+						  (name "foo")))))
 
     (test-group "Non-procedures"
-		(test `(#f ,(eval (string-append "Field hypertrace-test-nonproc is "
-						 "not a procedure in the environment.")))
-		      (mk-hypertrace-test '((nonproc "FAIL"))))
-		(test `(#f ,(eval (string-append "Field hypertrace-test-nonproc is "
-						 "not a procedure in the environment.")))
-		      (mk-hypertrace-test '((name "foo")
-					    (nonproc "FAIL"))))
-		(test `(#f ,(eval (string-append "Field hypertrace-test-nonproc is "
-						 "not a procedure in the environment.")))
-		      (mk-hypertrace-test '((nonproc "FAIL")
-					    (name "foo")))))
+		(test-error (mk-hypertrace-test '((nonproc "FAIL"))))
+		(test-error (mk-hypertrace-test '((name "foo")
+						  (nonproc "FAIL"))))
+		(test-error (mk-hypertrace-test '((nonproc "FAIL")
+						  (name "foo")))))
 
-    (bare-run-test (mk-hypertrace-test '((name "Bare-run test"))))))
+    (bare-run-test (mk-hypertrace-test '((name "Bare-run test"))))
+
+    (test-group "Stager fields"
+		(define test-stager (mk-hypertrace-stager '((name "Foo")
+							    (test-list (1 2 3))
+							    (directory-path "Bar"))))
+
+		(test "Foo" (hypertrace-stager-name test-stager))
+		(test '(1 2 3) (hypertrace-stager-test-list test-stager))
+		(test "Bar" (hypertrace-stager-directory-path test-stager)))
+
+    ;; TODO: Process the stagers further than just printing them.
+    (let ((stagers (load-stagers "../libexec/hypertrace-test/tests/")))
+      (for-each
+       (lambda (stager)
+	 (print (hypertrace-stager-name stager))
+	 (print (hypertrace-stager-test-list stager))
+	 (print (hypertrace-stager-directory-path stager)))
+       stagers))))
 
 (main command-line-arguments)
