@@ -17,8 +17,7 @@
 (define hypertrace-options
   (list
    (args:make-option
-    (b bare)    #:none              "Bare run of the test suite"
-    (display "Running tests in bare mode...\n"))
+    (b bare)    #:none              "Bare run of the test suite")
    
    (args:make-option
     (V verbose) (optional: "LEVEL") "Verbosity level [default: 1]"
