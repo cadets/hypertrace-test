@@ -1,5 +1,8 @@
 (declare (unit hypertrace-stager))
 
+(import scheme
+	(chicken file))
+
 ;;
 ;; Record:
 ;;  name           : string; name of stager
@@ -50,8 +53,7 @@
        (when (and (file-exists? test-file)
 		  (file-readable? test-file))
 	 (let ((loaded-contents #f))
-	   (load-relative test-file
-			  (lambda (x) (set! loaded-contents x)))
+	   (load test-file (lambda (x) (set! loaded-contents x)))
 	   (stage-tests stager (eval loaded-contents)))))
      test-files)))
 
