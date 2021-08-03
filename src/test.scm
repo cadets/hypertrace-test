@@ -1,16 +1,10 @@
 (declare (unit hypertrace-test))
+(declare (uses hypertrace-edsl))
 
 (import chicken.base
 	srfi-1
 	srfi-17
-	fmt
-
-	symbol-utils
-
-	miscmacros)
-
-(declare (uses hypertrace-edsl))
-
+	fmt)
 
 ;;
 ;; Record:
