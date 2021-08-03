@@ -1,8 +1,11 @@
 (import scheme
 	(chicken process-context)
+	(chicken pathname)
 	test
-	args)
+	args
+	(hypertrace util))
 
+(declare (uses hypertrace-util))
 (declare (uses hypertrace-test-runner))
 (declare (uses hypertrace-test))
 (declare (uses hypertrace-option-parser))
@@ -26,13 +29,27 @@
 
 
 ;;
+;; Directory containing all of the necessary HyperTrace stagers and tests.
+;;
+
+(define hypertrace-test-dir #f)
+
+;;
 ;; Main entry point of the program.
 ;;
 
 (define (main args)
+  (with-environment-variable-if-not-f "HYPERTRACE_TESTPATH"
+				      (string-append
+				       (pathname-directory (executable-pathname))
+				       "/../libexec/hypertrace-test/tests")
+				      (set! hypertrace-test-dir
+					(get-environment-variable
+					 "HYPERTRACE_TESTPATH")))
+
   (receive (options operands)
       (args:parse (args) hypertrace-options)
-
+    
     (set! hypertrace-test-verbosity
       (or (alist-ref 'verbose options) 0))
 
@@ -86,7 +103,8 @@
 		(test "Bar" (hypertrace-stager-directory-path test-stager)))
 
     ;; TODO: Process the stagers further than just printing them.
-    (let ((stagers (load-stagers "../libexec/hypertrace-test/tests/")))
+    (print hypertrace-test-dir)
+    (let ((stagers (load-stagers hypertrace-test-dir)))
       (for-each
        (lambda (stager)
 	 (print (hypertrace-stager-name stager))
