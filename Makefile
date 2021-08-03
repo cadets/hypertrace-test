@@ -12,19 +12,30 @@ STAGERS_SRCDIR := stagers
 
 SRC_DIR := src
 
-SRCS := $(shell find $(SRC_DIR) -name *.scm -exec basename {} \;)
+SRCS := $(shell find $(SRC_DIR) -name '*.scm' -exec basename {} \;)
 OBJS := $(patsubst %.scm,$(BUILD_DIR)/%.o,$(SRCS))
+
+MODULE_DIR := modules
 
 STAGERS_SRCS := $(shell find $(STAGERS_SRCDIR) -name *.scm -exec basename {} \;)
 STAGERS_DSTS := $(patsubst %.scm,$(STAGERS_DIR)/%.scm,$(STAGERS_SRCS))
 
-$(PROGRAM): $(OBJS) $(STAGERS_DSTS)
-	@echo "LD     $(PROGRAM)"
-	@$(CSC) $(CSC_FLAGS) $(OBJS) -o $(BIN_DIR)/$(PROGRAM)
+.PHONY: $(MODULE_DIR) move_imports $(STAGERS_DIR)
 
-$(BUILD_DIR)/%.o : src/%.scm $(BIN_DIR)
+$(PROGRAM): $(OBJS) $(STAGERS_DIR) $(STAGERS_DSTS) $(BIN_DIR)
+	@echo "LD     $(PROGRAM)"
+	@$(CSC) $(CSC_FLAGS) $(shell find $(BUILD_DIR) -name '*.o') build/util.o -o $(BIN_DIR)/$(PROGRAM)
+
+$(BUILD_DIR)/%.o : $(SRC_DIR)/%.scm | $(MODULE_DIR) move_imports
 	@echo "CSC    $<"
 	@$(CSC) -c $(CSC_FLAGS) $< -o $@
+
+$(MODULE_DIR): $(BUILD_DIR)
+	@$(MAKE) -C $@
+
+move_imports: $(MODULE_DIR)
+	@$(shell find modules -name '*import.scm' -exec mv -f {} . \;)
+	@echo "MOVE   imports"
 
 $(STAGERS_DIR)/%.scm : $(STAGERS_SRCDIR)/%.scm $(STAGERS_DIR)
 	@echo "CP     $<"
@@ -53,5 +64,7 @@ $(STAGERS_DIR): $(LIBEXEC_HYPERTRACE)
 clean:
 	@echo "RM     $(BUILD_DIR)"
 	@rm -rf $(BUILD_DIR)
+	@echo "CLEAN  imports"
+	@rm -f *import.scm
 
 cleandir distclean realclean: clean
