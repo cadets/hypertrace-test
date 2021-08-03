@@ -27,10 +27,7 @@
       (when (and (file-exists? stager-file)
 		 (file-readable? stager-file))
 	(let ((loaded-contents #f))
-	  (load-relative stager-file
-			 (lambda (x)
-			   (set! loaded-contents x)))
-
+	  (load-relative stager-file (lambda (x) (set! loaded-contents x)))
 	  (if (eq? '() rest)
 	      (cons* (eval loaded-contents) stagers)
 	      (loop (car rest)
