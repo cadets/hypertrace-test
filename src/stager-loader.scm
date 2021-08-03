@@ -19,7 +19,7 @@
   (when (not (directory-exists? rel-path))
     (list #f (fmt #f rel-path " is not a valid directory.")))
   
-  (let ((stager-files (glob (string-append rel-path "*.scm"))))
+  (let ((stager-files (glob (string-append rel-path "/*.scm"))))
     (let loop ((stager-file (car stager-files))
 	       (rest (cdr stager-files))
 	       (stagers (list)))
