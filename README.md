@@ -26,6 +26,11 @@ project is mostly meant to be compiled down to a single binary (and perhaps in
 the future as a library). Chicken Scheme can easily be called from C, and it can
 easily call C.
 
+## Version of Chicken Scheme
+
+This software depends on Chicken Scheme 5. If your OS ships Chicken Scheme 4,
+please follow the instructions down below on building Chicken from source.
+
 ## Building from Source
 
 ### FreeBSD
