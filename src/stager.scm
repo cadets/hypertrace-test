@@ -50,7 +50,7 @@
   (let* ((test-files (glob (string-append rel-path "/*.scm"))))
     (for-each
      (lambda (test-file)
-       (when (and (file-exists? test-file)
+       (when (and (file-exists?   test-file)
 		  (file-readable? test-file))
 	 (let ((loaded-contents #f))
 	   (load test-file (lambda (x) (set! loaded-contents x)))
