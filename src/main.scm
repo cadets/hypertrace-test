@@ -109,13 +109,10 @@
 		(test '(1 2 3) (hypertrace-stager-test-list test-stager))
 		(test "Bar" (hypertrace-stager-directory-path test-stager)))
 
-    ;; TODO: Process the stagers further than just printing them.
     (let ((stagers (load-stagers hypertrace-test-dir)))
       (for-each
        (lambda (stager)
-	 (print (hypertrace-stager-name stager))
-	 (print (hypertrace-stager-test-list stager))
-	 (print (hypertrace-stager-directory-path stager)))
+	 (stage-tests stager))
        stagers))))
 
 (main command-line-arguments)
