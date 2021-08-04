@@ -3,7 +3,8 @@
 (import scheme
 	fmt
 	srfi-1
-	(chicken file))
+	(chicken file)
+	(chicken pathname))
 
 (declare (uses hypertrace-stager))
 
@@ -19,7 +20,7 @@
   (when (not (directory-exists? rel-path))
     (list #f (fmt #f rel-path " is not a valid directory.")))
   
-  (let ((stager-files (glob (string-append rel-path "/*.scm"))))
+  (let ((stager-files (glob (string-append rel-path "*.scm"))))
     (let loop ((stager-file (car stager-files))
 	       (rest (cdr stager-files))
 	       (stagers (list)))
@@ -27,8 +28,14 @@
 		 (file-readable? stager-file))
 	(let ((loaded-contents #f))
 	  (load stager-file (lambda (x) (set! loaded-contents x)))
-	  (if (eq? '() rest)
-	      (cons* (eval loaded-contents) stagers)
-	      (loop (car rest)
-		    (cdr rest)
-		    (cons* (eval loaded-contents) stagers))))))))
+	  (let ((stager (eval loaded-contents)))
+	    ;; Compute the absolute path of the test directory for this stager.
+	    (set! (hypertrace-stager-directory-path stager)
+	      (normalize-pathname (string-append
+				   hypertrace-test-dir
+				   (hypertrace-stager-directory-path stager))))
+	    (if (eq? '() rest)
+		(cons* stager stagers)
+		(loop (car rest)
+		      (cdr rest)
+		      (cons* stager stagers)))))))))
