@@ -46,19 +46,22 @@
 ;; returns a hypertrace-test record.
 ;;
 
-(define (stage-tests stager path)
-  (when (not (directory-exists? path))
-    (print path " is not a valid directory."))
+(define (stage-tests stager)
+  (let ((path (hypertrace-stager-directory-path stager)))
+    (when (not (directory-exists? path))
+      (print path " is not a valid directory."))
 
-  (let* ((test-files (glob (string-append path "*.scm"))))
-    (for-each
-     (lambda (test-file)
-       (when (and (file-exists?   test-file)
-		  (file-readable? test-file))
-	 (let ((loaded-contents #f))
-	   (load test-file (lambda (x) (set! loaded-contents x)))
-	   (stage stager (eval loaded-contents)))))
-     test-files)))
+    (let* ((test-files (glob (string-append path "*.scm"))))
+      (for-each
+       (lambda (test-file)
+	 (when (and (file-exists?   test-file)
+		    (file-readable? test-file))
+	   (let ((loaded-contents #f))
+	     (load test-file (lambda (x) (set! loaded-contents x)))
+	     (when (>= hypertrace-test-verbosity 2)
+	       (print "Staging " test-file))
+	     (stage stager (eval loaded-contents)))))
+       test-files))))
 
 
 ;;
