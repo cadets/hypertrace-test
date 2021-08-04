@@ -47,7 +47,7 @@
   (when (not (directory-exists? rel-path))
     (print rel-path " is not a valid directory."))
 
-  (let* ((test-files (glob (string-append rel-path "/*.scm"))))
+  (let* ((test-files (glob (string-append rel-path "*.scm"))))
     (for-each
      (lambda (test-file)
        (when (and (file-exists?   test-file)
