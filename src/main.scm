@@ -113,6 +113,14 @@
       (for-each
        (lambda (stager)
 	 (stage-tests stager))
-       stagers))))
+       stagers)
+
+      (let ((runner (if (alist-ref 'bare options)
+			bare-run-test
+			run-test)))
+	(for-each
+	 (lambda (stager)
+	   (stager-run stager runner))
+	 stagers)))))
 
 (main command-line-arguments)
