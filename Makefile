@@ -20,6 +20,7 @@ MODULE_DIR := modules
 STAGERS_SRCS := $(shell find $(STAGERS_SRCDIR) -name *.scm -exec basename {} \;)
 STAGERS_DSTS := $(patsubst %.scm,$(STAGERS_DIR)/%.scm,$(STAGERS_SRCS))
 
+.SILENT:
 .PHONY: $(MODULE_DIR) move_imports $(STAGERS_DIR) move_tests
 
 $(PROGRAM): $(OBJS) $(STAGERS_DIR) $(STAGERS_DSTS) $(BIN_DIR) move_tests
