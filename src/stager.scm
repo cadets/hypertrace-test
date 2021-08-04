@@ -1,6 +1,7 @@
 (declare (unit hypertrace-stager))
 
 (import scheme
+	(chicken pathname)
 	(chicken file))
 
 ;;
@@ -56,13 +57,79 @@
        (lambda (test-file)
 	 (when (and (file-exists?   test-file)
 		    (file-readable? test-file))
+	   ;; XXX: A bit of a dirty hack, maybe could be done better.
 	   (let ((loaded-contents #f))
 	     (load test-file (lambda (x) (set! loaded-contents x)))
 	     (when (>= hypertrace-test-verbosity 2)
 	       (print "Staging " test-file))
-	     (stage stager (eval loaded-contents)))))
+	     
+	     (let ((test (eval loaded-contents)))
+	       ;; Normalize the in-file path and make it absolute.
+	       (set! (hypertrace-test-in-file test)
+		 (normalize-pathname
+		  (string-append (hypertrace-stager-directory-path stager)
+				 (hypertrace-test-in-file test))))
+
+	       ;; Normalize the expected-out path and make it absolute.
+	       (set! (hypertrace-test-expected-out test)
+		 (normalize-pathname
+		  (string-append (hypertrace-stager-directory-path stager)
+				 (hypertrace-test-expected-out test))))
+
+	       ;;
+	       ;; In case that we can both read and execute the in-file (a shell
+	       ;; script or something similar), and we can read the expected-out
+	       ;; file, we simply stage the test for execution. However, in the
+	       ;; case that one of these things is not true, we need to do some
+	       ;; error reporting to the user in order to have a user-friendly
+	       ;; error *before* we start executing any staged tests that
+	       ;; something has gone wrong in the setup.
+	       ;;
+	       (if (and (file-exists?     (hypertrace-test-in-file test))
+			(file-executable? (hypertrace-test-in-file test))
+			(file-exists?     (hypertrace-test-expected-out test))
+			(file-readable?   (hypertrace-test-expected-out test)))
+		   (stage stager test)
+		   (begin
+		     ;; in-file does not exist.
+		     (when (not (file-exists? (hypertrace-test-in-file test)))
+		       (print "ERROR: File " (hypertrace-test-in-file test)
+			      " does not exist. Exiting.")
+		       (exit 1))
+
+		     ;; in-file is not executable.
+		     (when (not (file-executable?
+				 (hypertrace-test-in-file test)))
+		       (print "ERROR: Cannot execute "
+			      (hypertrace-test-in-file test) ". Exiting.")
+		       (exit 1))
+
+		     ;; expected-out does not exist.
+		     (when (not (file-exists?
+				 (hypertrace-test-expected-out test)))
+		       (print "ERROR: File " (hypertrace-test-expected-out test)
+			      " does not exist. Exiting.")
+		       (exit 1))
+
+		     ;; expected-out is not readable.
+		     (when (not (file-readable?
+				 (hypertrace-test-expected-out test)))
+		       (print "ERROR: Cannot read "
+			      (hypertrace-test-expected-out test) ". Exiting.")
+		       (exit 1))))))))
        test-files))))
 
+
+;;
+;; Run all of the staged tests in a particular stager with a specific
+;; runner procedure. By default, this is 'run-test'.
+;;
+
+(define (stager-run stager runner)
+  (for-each
+   (lambda (test)
+     (runner test))
+   (hypertrace-stager-tests stager)))
 
 ;;
 ;; Make a HyperTrace stager record initializer out of the record with the
