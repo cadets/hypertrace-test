@@ -39,13 +39,20 @@
 ;;
 
 (define (main args)
+  ;; If the user set HYPERTRACE_TESTPATH, we will use that. Otherwise, we set it
+  ;; to a default value of /../libexec/hypertrace-test/tests/ assuming that both
+  ;; the build path and the installed binary path will be in the correct
+  ;; structure that our Makefile creates.
   (with-environment-variable-if-not-f "HYPERTRACE_TESTPATH"
 				      (string-append
 				       (pathname-directory (executable-pathname))
-				       "/../libexec/hypertrace-test/tests")
+				       "/../libexec/hypertrace-test/tests/")
 				      (set! hypertrace-test-dir
 					(get-environment-variable
 					 "HYPERTRACE_TESTPATH")))
+
+  ;; Create a canonical path name.
+  (set! hypertrace-test-dir (normalize-pathname hypertrace-test-dir))
 
   (receive (options operands)
       (args:parse (args) hypertrace-options)
@@ -103,7 +110,6 @@
 		(test "Bar" (hypertrace-stager-directory-path test-stager)))
 
     ;; TODO: Process the stagers further than just printing them.
-    (print hypertrace-test-dir)
     (let ((stagers (load-stagers hypertrace-test-dir)))
       (for-each
        (lambda (stager)
