@@ -20,9 +20,9 @@ MODULE_DIR := modules
 STAGERS_SRCS := $(shell find $(STAGERS_SRCDIR) -name *.scm -exec basename {} \;)
 STAGERS_DSTS := $(patsubst %.scm,$(STAGERS_DIR)/%.scm,$(STAGERS_SRCS))
 
-.PHONY: $(MODULE_DIR) move_imports $(STAGERS_DIR)
+.PHONY: $(MODULE_DIR) move_imports $(STAGERS_DIR) move_tests
 
-$(PROGRAM): $(OBJS) $(STAGERS_DIR) $(STAGERS_DSTS) $(BIN_DIR)
+$(PROGRAM): $(OBJS) $(STAGERS_DIR) $(STAGERS_DSTS) $(BIN_DIR) move_tests
 	@echo "LD     $(PROGRAM)"
 	@$(CSC) $(CSC_FLAGS) $(shell find $(BUILD_DIR) -name '*.o') build/util.o -o $(BIN_DIR)/$(PROGRAM)
 
@@ -34,8 +34,12 @@ $(MODULE_DIR): $(BUILD_DIR)
 	@$(MAKE) -C $@
 
 move_imports: $(MODULE_DIR)
-	@$(shell find modules -name '*import.scm' -exec mv -f {} . \;)
 	@echo "MOVE   imports"
+	@$(shell find modules -name '*import.scm' -exec mv -f {} . \;)
+
+move_tests: $(STAGERS_DIR)
+	@echo "MOVE   tests"
+	@$(shell find tests -mindepth 1 -maxdepth 1 -type d -exec cp -R {} $(STAGERS_DIR) \;)
 
 $(STAGERS_DIR)/%.scm : $(STAGERS_SRCDIR)/%.scm $(STAGERS_DIR)
 	@echo "CP     $<"
