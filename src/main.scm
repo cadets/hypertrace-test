@@ -39,10 +39,12 @@
 ;;
 
 (define (main args)
+  ;;
   ;; If the user set HYPERTRACE_TESTPATH, we will use that. Otherwise, we set it
   ;; to a default value of /../libexec/hypertrace-test/tests/ assuming that both
   ;; the build path and the installed binary path will be in the correct
   ;; structure that our Makefile creates.
+  ;;
   (with-environment-variable-if-not-f "HYPERTRACE_TESTPATH"
 				      (string-append
 				       (pathname-directory (executable-pathname))
