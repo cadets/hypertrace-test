@@ -34,20 +34,23 @@
 
 
 ;;
-;; The stage-tests procedure goes through each of the *.scm files in a relative
-;; path from the current stager (its install location). For each file it
-;; encounters, it loads it into the current environment as a quoted expression.
-;; The expectation is that tests are specified using mk-hypertrace-test and
-;; will return a hypertrace-test record once 'eval' is called on the loaded
-;; expression. See the 'test/' directory in the root checkout of this repository
-;; for sample tests.
+;; The stage-tests procedure goes through each of the *.scm files in 'path'. For
+;; each file it encounters, it loads it into the current environment as a quoted
+;; expression. The expectation is that tests are specified using
+;; mk-hypertrace-test and will return a hypertrace-test record once 'eval' is
+;; called on the loaded expression. See the 'test/' directory in the root
+;; checkout of this repository for sample tests.
+;;
+;; NOTE: It doesn't actually have to be (mk-hypertrace-test ...). In fact, it
+;; can be any valid scheme code, as long as calling (eval ...) on the file
+;; returns a hypertrace-test record.
 ;;
 
-(define (stage-tests stager rel-path)
-  (when (not (directory-exists? rel-path))
-    (print rel-path " is not a valid directory."))
+(define (stage-tests stager path)
+  (when (not (directory-exists? path))
+    (print path " is not a valid directory."))
 
-  (let* ((test-files (glob (string-append rel-path "*.scm"))))
+  (let* ((test-files (glob (string-append path "*.scm"))))
     (for-each
      (lambda (test-file)
        (when (and (file-exists?   test-file)
