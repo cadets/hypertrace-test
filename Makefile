@@ -39,7 +39,7 @@ move_imports: $(MODULE_DIR)
 
 move_tests: $(STAGERS_DIR)
 	@echo "MOVE   tests"
-	@$(shell find tests -mindepth 1 -maxdepth 1 -type d -exec cp -R {} $(STAGERS_DIR) \;)
+	@$(shell find tests -mindepth 1 -maxdepth 1 -type d -exec cp -Rp {} $(STAGERS_DIR) \;)
 
 $(STAGERS_DIR)/%.scm : $(STAGERS_SRCDIR)/%.scm $(STAGERS_DIR)
 	@echo "CP     $<"
