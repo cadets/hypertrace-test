@@ -31,6 +31,9 @@
       (when (and (file-exists? stager-file)
 		 (file-readable? stager-file))
 	(let ((loaded-contents #f))
+	  (when (>= hypertrace-test-verbosity 2)
+	    (print "Loading  " stager-file))
+	  
 	  (load stager-file (lambda (x) (set! loaded-contents x)))
 	  (let ((stager (eval loaded-contents)))
 	    ;; Compute the absolute path of the test directory for this stager.
@@ -38,6 +41,7 @@
 	      (normalize-pathname (string-append
 				   hypertrace-test-dir
 				   (hypertrace-stager-directory-path stager))))
+	    
 	    (if (eq? '() rest)
 		(cons* stager stagers)
 		(loop (car rest)
