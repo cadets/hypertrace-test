@@ -10,17 +10,21 @@
 
 
 ;;
-;; This procedure takes a (relative) path and loads all of the *.scm files
-;; present in that directory. It then loads what it assumes to be an expression
-;; of form (mk-hypertrace-stager ...) and loads it into the runtime of the test
+;; This procedure takes a path and loads all of the *.scm files present in that
+;; directory. It then loads what it assumes to be an expression of form
+;; (mk-hypertrace-stager ...) and loads it into the runtime of the test
 ;; framework as a stager record.
 ;;
+;; NOTE: It doesn't actually have to be (mk-hypertrace-stager ...). In fact, it
+;; can be any valid scheme code, as long as calling (eval ...) on the file
+;; returns a hypertrace-stager record.
+;;
 
-(define (load-stagers rel-path)
-  (when (not (directory-exists? rel-path))
-    (list #f (fmt #f rel-path " is not a valid directory.")))
+(define (load-stagers path)
+  (when (not (directory-exists? path))
+    (list #f (fmt #f path " is not a valid directory.")))
   
-  (let ((stager-files (glob (string-append rel-path "*.scm"))))
+  (let ((stager-files (glob (string-append path "*.scm"))))
     (let loop ((stager-file (car stager-files))
 	       (rest (cdr stager-files))
 	       (stagers (list)))
