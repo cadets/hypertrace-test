@@ -102,11 +102,11 @@
 
     (test-group "Stager fields"
 		(define test-stager (mk-hypertrace-stager '((name "Foo")
-							    (test-list (1 2 3))
+							    (tests (1 2 3))
 							    (directory-path "Bar"))))
 
 		(test "Foo" (hypertrace-stager-name test-stager))
-		(test '(1 2 3) (hypertrace-stager-test-list test-stager))
+		(test '(1 2 3) (hypertrace-stager-tests test-stager))
 		(test "Bar" (hypertrace-stager-directory-path test-stager)))
 
     (let ((stagers (load-stagers hypertrace-test-dir)))

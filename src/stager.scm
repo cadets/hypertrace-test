@@ -6,18 +6,18 @@
 ;;
 ;; Record:
 ;;  name           : string; name of stager
-;;  test-list      : list; list of staged tests
+;;  tests          : list; list of staged tests
 ;;  directory-path : string; relative path to test directory
 ;;
 
 (define-record-type hypertrace-stager
-  (make-hypertrace-stager name test-list directory-path)
+  (make-hypertrace-stager name tests directory-path)
   hypertrace-stager?
   (name hypertrace-stager-name
 	(setter hypertrace-stager-name)) ;string
 
-  (test-list hypertrace-stager-test-list
-	     (setter hypertrace-stager-test-list)) ;list
+  (tests hypertrace-stager-tests
+	 (setter hypertrace-stager-tests)) ;list
 
   (directory-path hypertrace-stager-directory-path
 		  (setter hypertrace-stager-directory-path)) ;string
@@ -29,7 +29,7 @@
 ;;
 
 (define (stage stager test)
-  (set! (hypertrace-stager-test-list stager)
+  (set! (hypertrace-stager-tests stager)
     (cons test (hypertrace-stager-tests stager))))
 
 
@@ -68,7 +68,7 @@
 ;; Make a HyperTrace stager record initializer out of the record with the
 ;; following default values:
 ;;  name           : #f
-;;  test-list      : empty list
+;;  tests          : empty list
 ;;  directory-path : #f
 ;;
 
