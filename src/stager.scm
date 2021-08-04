@@ -57,7 +57,7 @@
 		  (file-readable? test-file))
 	 (let ((loaded-contents #f))
 	   (load test-file (lambda (x) (set! loaded-contents x)))
-	   (stage-tests stager (eval loaded-contents)))))
+	   (stage stager (eval loaded-contents)))))
      test-files)))
 
 
