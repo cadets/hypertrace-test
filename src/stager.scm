@@ -61,7 +61,7 @@
 	   (let ((loaded-contents #f))
 	     (load test-file (lambda (x) (set! loaded-contents x)))
 	     (when (>= hypertrace-test-verbosity 2)
-	       (print "Staging " test-file))
+	       (print "Staging  " test-file))
 	     
 	     (let ((test (eval loaded-contents)))
 	       ;; Normalize the in-file path and make it absolute.
@@ -117,7 +117,10 @@
 		       (print "ERROR: Cannot read "
 			      (hypertrace-test-expected-out test) ". Exiting.")
 		       (exit 1))))))))
-       test-files))))
+       test-files)
+      (when (>= hypertrace-test-verbosity 2)
+	(display "\n")))))
+
 
 
 ;;
