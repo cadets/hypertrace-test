@@ -2,17 +2,17 @@
 
 This repository contains both the necessary framework and the entire test suite
 used for testing the CADETS HyperTrace implementation. The current state of the
-code is heavily unstable and changing often, as there is still a lack of
-functionality needed to actually run HyperTrace tests, both in the HyperTrace
-implementation itself and the testing framework.
+code is heavily unstable and changing often. Tests themselves can be specified
+in the `tests/` subdirectory. Each subdirectory of `tests/`, for example
+`tests/example` needs to have a test stager specified under `stagers/`. See
+`stagers/example.scm`. In the future, it is likely that stagers will be able
+to stage multiple directories, however that is not supported quite yet, as it
+is unclear what they would be filtered on.
 
 ## TODO
 
-* Complete the test-runner.
-* Implement the necessary practices for users to specify tests.
 * Custom diffing functions (e.g. allowing different ordering, not exact match).
 * FreeBSD port.
-* Dry run for testing purposes.
 
 
 # Build/Install guide
@@ -83,5 +83,9 @@ build/hypertrace-test:
 
 Currently, there are no actual HyperTrace tests in the HyperTrace Test Suite.
 Still, there are a couple of tests for testing the test suite itself. You can
-run them by simply running `./build/hypertrace-test` from the checkout root
+run them by simply running `./build/bin/hypertrace-test` from the checkout root
 directory.
+
+Further, there is a `HYPERTRACE_TESTPATH` environment variable that the
+HyperTrace test suite recognises. If it is set, the tests and stagers will be
+looked for in that directory.
