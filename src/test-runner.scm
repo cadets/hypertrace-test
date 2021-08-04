@@ -4,9 +4,9 @@
 
 (import scheme
 	
-	chicken.base
-	chicken.io
-	chicken.string
+	(chicken base)
+	(chicken io)
+	(chicken string)
 	
 	srfi-1
 	
