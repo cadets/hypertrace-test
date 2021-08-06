@@ -2,9 +2,9 @@
 (declare (uses hypertrace-edsl))
 
 (import chicken.base
-	srfi-1
-	srfi-17
-	fmt)
+        srfi-1
+        srfi-17
+        fmt)
 
 ;;
 ;; Record:
@@ -23,19 +23,19 @@
   (make-hypertrace-test name in-file expected-out cmp-method run-method)
   hypertrace-test?
   (name hypertrace-test-name
-	(setter hypertrace-test-name)) ;string
+        (setter hypertrace-test-name)) ;string
   
   (in-file hypertrace-test-in-file
-	   (setter hypertrace-test-in-file)) ;string
+           (setter hypertrace-test-in-file)) ;string
   
   (expected-out hypertrace-test-expected-out
-		(setter hypertrace-test-expected-out)) ;string
+                (setter hypertrace-test-expected-out)) ;string
   
   (cmp-method hypertrace-test-cmp-method
-	      (setter hypertrace-test-cmp-method)) ;sexp function
+              (setter hypertrace-test-cmp-method)) ;sexp function
   
   (run-method hypertrace-test-run-method
-	      (setter hypertrace-test-run-method)) ;(separate-process|same-process)
+              (setter hypertrace-test-run-method)) ;(separate-process|same-process)
   )
 
 
