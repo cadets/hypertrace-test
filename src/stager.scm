@@ -118,6 +118,8 @@
                ;;
                ;; XXX: Insert a hypertrace-test? check?
                ;;
+               ;; Normalize the in-file path and make it absolute.
+               ;;
                (set! (hypertrace-test-in-file test)
                  (normalize-pathname
                   (string-append (hypertrace-stager-directory-path stager)
