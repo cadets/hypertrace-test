@@ -3,15 +3,15 @@
 (declare (uses hypertrace-test))
 
 (import scheme
-	
-	(chicken base)
-	(chicken io)
-	(chicken string)
-	(chicken process)
-	
-	srfi-1
-	
-	test)
+        
+        (chicken base)
+        (chicken io)
+        (chicken string)
+        (chicken process)
+        
+        srfi-1
+        
+        test)
 
 ;;
 ;; Reads a file line by line and returns a string with the contents
@@ -27,15 +27,15 @@
     ;; bad.
     ;;
     (apply string-append
-	   (cdr
-	    (reverse
-	     (let loop ((c (read-line fh))
-			(lines (list)))
-	       (if (eof-object? c)
-		   (begin
-		     (close-input-port fh)
-		     lines)
-		   (loop (read-line fh) (cons* c "\n" lines)))))))))
+           (cdr
+            (reverse
+             (let loop ((c (read-line fh))
+                        (lines (list)))
+               (if (eof-object? c)
+                   (begin
+                     (close-input-port fh)
+                     lines)
+                   (loop (read-line fh) (cons* c "\n" lines)))))))))
 
 
 ;;
@@ -47,10 +47,10 @@
 
 (define (bare-run-test test)
   (let* ((name         (hypertrace-test-name test))
-	 (in-file      (hypertrace-test-in-file test))
-	 (expected-out (hypertrace-test-expected-out test))
-	 (cmp-method   (hypertrace-test-cmp-method test))
-	 (run-method   (hypertrace-test-run-method test)))
+         (in-file      (hypertrace-test-in-file test))
+         (expected-out (hypertrace-test-expected-out test))
+         (cmp-method   (hypertrace-test-cmp-method test))
+         (run-method   (hypertrace-test-run-method test)))
     (test-assert name #t)))
 
 
@@ -65,39 +65,39 @@
 
 (define (run-test test-to-run)
   (let* ((name         (hypertrace-test-name test-to-run))
-	 (in-file      (hypertrace-test-in-file test-to-run))
-	 (expected-out (hypertrace-test-expected-out test-to-run))
-	 (cmp-method   (hypertrace-test-cmp-method test-to-run))
-	 (run-method   (hypertrace-test-run-method test-to-run))
-	 (expected-str (read-test-file expected-out)))
+         (in-file      (hypertrace-test-in-file test-to-run))
+         (expected-out (hypertrace-test-expected-out test-to-run))
+         (cmp-method   (hypertrace-test-cmp-method test-to-run))
+         (run-method   (hypertrace-test-run-method test-to-run))
+         (expected-str (read-test-file expected-out)))
     ;; Spawn the process and grab its ports.
     (receive (stdout stdin pid stderr) (process* in-file)
       ;; Wait for the process to end.
       (receive (exit-pid success? status) (process-wait pid)
-	;;
-	;; If we get an exit of a pid that we weren't waiting for, this is
-	;; probably a bug in the library. We just want to hard fail here and
-	;; report a bug...
-	;;
-	(when (not (= pid exit-pid))
-	  (print "ERROR: Waited on " pid " but got " exit-pid ". Exiting.")
-	  (exit 1))
-	
-	(if (not success?)
-	    ;; Fail the test and report and error if verbosity is >= 2.
-	    (begin
-	      (when (>= hypertrace-test-verbosity 2)
-		(print "ERROR: Child process exited with exit code: " status)
-		(let ((errors (read-buffered stderr)))
-		  (when (not (equal? errors ""))
-		    (print "stderr (" in-file "): " errors))))
-	      (test-assert name #f))
-	    
-	    ;; Check the process stdout with our expected output.
-	    (let ((contents (read-line stdout))
-		  (errors   (read-buffered stderr)))
-	      (begin
-		(test name expected-str contents)
-		(when (and (>= hypertrace-test-verbosity 2)
-			   (not (equal? errors "")))
-		  (print "stderr (" in-file "): " errors)))))))))
+        ;;
+        ;; If we get an exit of a pid that we weren't waiting for, this is
+        ;; probably a bug in the library. We just want to hard fail here and
+        ;; report a bug...
+        ;;
+        (when (not (= pid exit-pid))
+          (print "ERROR: Waited on " pid " but got " exit-pid ". Exiting.")
+          (exit 1))
+        
+        (if (not success?)
+            ;; Fail the test and report and error if verbosity is >= 2.
+            (begin
+              (when (>= hypertrace-test-verbosity 2)
+                (print "ERROR: Child process exited with exit code: " status)
+                (let ((errors (read-buffered stderr)))
+                  (when (not (equal? errors ""))
+                    (print "stderr (" in-file "): " errors))))
+              (test-assert name #f))
+            
+            ;; Check the process stdout with our expected output.
+            (let ((contents (read-line stdout))
+                  (errors   (read-buffered stderr)))
+              (begin
+                (test name expected-str contents)
+                (when (and (>= hypertrace-test-verbosity 2)
+                           (not (equal? errors "")))
+                  (print "stderr (" in-file "): " errors)))))))))
