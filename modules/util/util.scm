@@ -15,7 +15,7 @@
   (define-syntax with-environment-variable
     (er-macro-transformer
      (lambda (exp r c)
-       (let ((variable (cadr exp))
+       (let ((variable (cadr  exp))
              (value    (caddr exp))
              (body     (cdddr exp)))
          `(,(r 'let) ((current (,(r 'get-environment-variable) ,variable)))
@@ -35,7 +35,7 @@
   (define-syntax with-environment-variable-if-not-f
     (er-macro-transformer
      (lambda (exp r c)
-       (let ((variable (cadr exp))
+       (let ((variable (cadr  exp))
              (value    (caddr exp))
              (body     (cdddr exp)))
          `(,(r 'if) (,(r 'get-environment-variable) ,variable)
