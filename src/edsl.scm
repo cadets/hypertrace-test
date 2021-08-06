@@ -1,11 +1,11 @@
 (declare (unit hypertrace-edsl))
 
 (import chicken.base
-	srfi-1
-	srfi-17
-	fmt
+        srfi-1
+        srfi-17
+        fmt
 
-	symbol-utils)
+        symbol-utils)
 
 ;;
 ;; A simple wrapper around make-record-initializer that creates the procedure
@@ -52,15 +52,15 @@
   `(define (,(symbol-append 'mk- rec) spec-list)
      (let ((entry (,(symbol-append 'make- rec) ,@default)))
        (for-each
-	(lambda (spec)
-	  (let* ((field (car spec))
-		 (value (cadr spec))
-		 (full-field-name
-		  (if (symbol? field)
-		      (,symbol-append
-		       (,symbol-append (,->symbol ,rec) '-) field)
-		      #f))
-		 (proc (eval full-field-name)))
-	    (set! (proc entry) value)))
-	spec-list)
+        (lambda (spec)
+          (let* ((field (car spec))
+                 (value (cadr spec))
+                 (full-field-name
+                  (if (symbol? field)
+                      (,symbol-append
+                       (,symbol-append (,->symbol ,rec) '-) field)
+                      #f))
+                 (proc (eval full-field-name)))
+            (set! (proc entry) value)))
+        spec-list)
        entry)))
