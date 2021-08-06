@@ -19,23 +19,24 @@
 ;;
 
 (define (read-test-file filepath)
-  (let ((fh (open-input-file filepath)))
-    ;;
-    ;; Annoyingly, we have to do this manually instead of just using a procedure
-    ;; called reverse-string-append because we need to plug in a cdr in there
-    ;; in order to avoid a leading '\n' in our string. It however, is not too
-    ;; bad.
-    ;;
-    (apply string-append
-           (cdr
-            (reverse
-             (let loop ((c (read-line fh))
-                        (lines (list)))
-               (if (eof-object? c)
-                   (begin
-                     (close-input-port fh)
-                     lines)
-                   (loop (read-line fh) (cons* c "\n" lines)))))))))
+  (when (not (equal? filepath #f))
+    (let ((fh (open-input-file filepath)))
+      ;;
+      ;; Annoyingly, we have to do this manually instead of just using a procedure
+      ;; called reverse-string-append because we need to plug in a cdr in there
+      ;; in order to avoid a leading '\n' in our string. It however, is not too
+      ;; bad.
+      ;;
+      (apply string-append
+             (cdr
+              (reverse
+               (let loop ((c (read-line fh))
+                          (lines (list)))
+                 (if (eof-object? c)
+                     (begin
+                       (close-input-port fh)
+                       lines)
+                     (loop (read-line fh) (cons* c "\n" lines))))))))))
 
 
 ;;
@@ -97,7 +98,14 @@
             (let ((contents (read-line stdout))
                   (errors   (read-buffered stderr)))
               (begin
-                (test name expected-str contents)
+                ;;
+                ;; If we don't have an expected-out path, that means we only
+                ;; want to compare the exit status of the executable we are
+                ;; running.
+                ;;
+                (if (equal? expected-out #f)
+                    (test 0 status)
+                    (test name expected-str contents))
                 (when (and (>= hypertrace-test-verbosity 2)
                            (not (equal? errors "")))
                   (print "stderr (" in-file "): " errors)))))))))
