@@ -36,6 +36,28 @@
 
 
 ;;
+;; A simple macro to avoid messy syntax when loading contents of a particular
+;; file that contains tests.
+;;
+;; Example usage:
+;;
+;;  (with-loaded-tests "/path/to/foo.scm" variable-name
+;;   (call-something-on variable-name))
+;;
+
+(define-syntax with-loaded-tests
+  (er-macro-transformer
+   (lambda (exp r c)
+     (let ((test-path (cadr   exp))
+           (var-name  (caddr  exp))
+           (body      (cdddr exp)))
+       `(,(r 'let) ((,var-name #f))
+         (,(r 'load) ,test-path
+          (,(r 'lambda) (x) (,(r 'set!) ,var-name x)))
+         ,@body)))))
+
+
+;;
 ;; The stage-tests procedure goes through each of the *.scm files in 'path'. For
 ;; each file it encounters, it loads it into the current environment as a quoted
 ;; expression. The expectation is that tests are specified using
@@ -58,9 +80,7 @@
        (lambda (test-file)
          (when (and (file-exists?   test-file)
                     (file-readable? test-file))
-           ;; XXX: A bit of a dirty hack, maybe could be done better.
-           (let ((loaded-contents #f))
-             (load test-file (lambda (x) (set! loaded-contents x)))
+           (with-loaded-tests test-file loaded-contents
              (when (>= hypertrace-test-verbosity 2)
                (print "Staging  " test-file))
              
