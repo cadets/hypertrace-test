@@ -1,9 +1,9 @@
 (import scheme
-	(chicken process-context)
-	(chicken pathname)
-	test
-	args
-	(hypertrace util))
+        (chicken process-context)
+        (chicken pathname)
+        test
+        args
+        (hypertrace util))
 
 (declare (uses hypertrace-util))
 (declare (uses hypertrace-test-runner))
@@ -46,12 +46,12 @@
   ;; structure that our Makefile creates.
   ;;
   (with-environment-variable-if-not-f "HYPERTRACE_TESTPATH"
-				      (string-append
-				       (pathname-directory (executable-pathname))
-				       "/../libexec/hypertrace-test/tests/")
-				      (set! hypertrace-test-dir
-					(get-environment-variable
-					 "HYPERTRACE_TESTPATH")))
+                                      (string-append
+                                       (pathname-directory (executable-pathname))
+                                       "/../libexec/hypertrace-test/tests/")
+                                      (set! hypertrace-test-dir
+                                        (get-environment-variable
+                                         "HYPERTRACE_TESTPATH")))
 
   ;; Create a canonical path name.
   (set! hypertrace-test-dir (normalize-pathname hypertrace-test-dir))
@@ -64,65 +64,65 @@
 
     (when (<= hypertrace-test-verbosity 0)
       (set! (current-test-verbosity) #f))
-				     
+    
     (when (and (> hypertrace-test-verbosity 0)
-	       (alist-ref 'bare options))
+               (alist-ref 'bare options))
       (print "Running tests in bare mode..."))
 
     (test-group "Field tests"
-		(define test-test (mk-hypertrace-test '((name "Foo")
-							(expected-out "Bar"))))
+                (define test-test (mk-hypertrace-test '((name "Foo")
+                                                        (expected-out "Bar"))))
 
-		(test "Foo" (hypertrace-test-name test-test))
-		(test "Bar" (hypertrace-test-expected-out test-test))
-		(test #f (hypertrace-test-in-file test-test))
-		(test 'default-cmp-method (hypertrace-test-cmp-method test-test))
-		(test 'default-run-method (hypertrace-test-run-method test-test)))
+                (test "Foo" (hypertrace-test-name test-test))
+                (test "Bar" (hypertrace-test-expected-out test-test))
+                (test #f (hypertrace-test-in-file test-test))
+                (test 'default-cmp-method (hypertrace-test-cmp-method test-test))
+                (test 'default-run-method (hypertrace-test-run-method test-test)))
 
     (test-group "Unbound inputs"
-		(test-error (mk-hypertrace-test '((unbound-symbol "FAIL"))))
-		(test-error (mk-hypertrace-test '((name "foo")
-						  (unbound-symbol "FAIL"))))
-		(test-error (mk-hypertrace-test '((unbound-symbol "FAIL")
-						  (name "foo")))))
+                (test-error (mk-hypertrace-test '((unbound-symbol "FAIL"))))
+                (test-error (mk-hypertrace-test '((name "foo")
+                                                  (unbound-symbol "FAIL"))))
+                (test-error (mk-hypertrace-test '((unbound-symbol "FAIL")
+                                                  (name "foo")))))
 
     (test-group "Non-symbols"
-		(test-error (mk-hypertrace-test '(("string" "FAIL"))))
-		(test-error (mk-hypertrace-test '((name "foo")
-						  ("string" "FAIL"))))
-		(test-error (mk-hypertrace-test '(("string" "FAIL")
-						  (name "foo")))))
+                (test-error (mk-hypertrace-test '(("string" "FAIL"))))
+                (test-error (mk-hypertrace-test '((name "foo")
+                                                  ("string" "FAIL"))))
+                (test-error (mk-hypertrace-test '(("string" "FAIL")
+                                                  (name "foo")))))
 
     (test-group "Non-procedures"
-		(test-error (mk-hypertrace-test '((nonproc "FAIL"))))
-		(test-error (mk-hypertrace-test '((name "foo")
-						  (nonproc "FAIL"))))
-		(test-error (mk-hypertrace-test '((nonproc "FAIL")
-						  (name "foo")))))
+                (test-error (mk-hypertrace-test '((nonproc "FAIL"))))
+                (test-error (mk-hypertrace-test '((name "foo")
+                                                  (nonproc "FAIL"))))
+                (test-error (mk-hypertrace-test '((nonproc "FAIL")
+                                                  (name "foo")))))
 
     (bare-run-test (mk-hypertrace-test '((name "Bare-run test"))))
 
     (test-group "Stager fields"
-		(define test-stager (mk-hypertrace-stager '((name "Foo")
-							    (tests (1 2 3))
-							    (directory-path "Bar"))))
+                (define test-stager (mk-hypertrace-stager '((name "Foo")
+                                                            (tests (1 2 3))
+                                                            (directory-path "Bar"))))
 
-		(test "Foo" (hypertrace-stager-name test-stager))
-		(test '(1 2 3) (hypertrace-stager-tests test-stager))
-		(test "Bar" (hypertrace-stager-directory-path test-stager)))
+                (test "Foo" (hypertrace-stager-name test-stager))
+                (test '(1 2 3) (hypertrace-stager-tests test-stager))
+                (test "Bar" (hypertrace-stager-directory-path test-stager)))
 
     (let ((stagers (load-stagers hypertrace-test-dir)))
       (for-each
        (lambda (stager)
-	 (stage-tests stager))
+         (stage-tests stager))
        stagers)
 
       (let ((runner (if (alist-ref 'bare options)
-			bare-run-test
-			run-test)))
-	(for-each
-	 (lambda (stager)
-	   (stager-run stager runner))
-	 stagers)))))
+                        bare-run-test
+                        run-test)))
+        (for-each
+         (lambda (stager)
+           (stager-run stager runner))
+         stagers)))))
 
 (main command-line-arguments)
