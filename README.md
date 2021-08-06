@@ -13,6 +13,9 @@ is unclear what they would be filtered on.
 
 * Custom diffing functions (e.g. allowing different ordering, not exact match).
 * FreeBSD port.
+* Aggregation of results and reporting (HTML, JUnit)
+* Dependencies in stagers for binaries
+* Multiple tests specified in one file (as a list)
 
 
 # Build/Install guide
@@ -86,10 +89,21 @@ build/hypertrace-test:
 
 # Running the test suite
 
-Currently, there are no actual HyperTrace tests in the HyperTrace Test Suite.
-Still, there are a couple of tests for testing the test suite itself. You can
-run them by simply running `./build/bin/hypertrace-test` from the checkout root
-directory.
+The tests for the test suite itself can be run on any platform, regardless of
+HyperTrace support. Currently, HyperTrace tests will fail on any platform that
+doesn't support them. You can choose to run only the tests for the test suite
+itself:
+
+```
+./build/bin/hypertrace-test --no-stagers
+```
+
+However, if you wish to actually test the HyperTrace implementation, simply
+running the binary is sufficient:
+
+```
+./build/bin/hypertrace-test
+```
 
 Further, there is a `HYPERTRACE_TESTPATH` environment variable that the
 HyperTrace test suite recognises. If it is set, the tests and stagers will be
