@@ -104,7 +104,7 @@
                 ;; running.
                 ;;
                 (if (equal? expected-out #f)
-                    (test 0 status)
+                    (test name 0 status)
                     (test name expected-str contents))
                 (when (and (>= hypertrace-test-verbosity 2)
                            (not (equal? errors "")))
