@@ -1,6 +1,7 @@
 (declare (unit hypertrace-stager))
 
 (import scheme
+	test
 	(chicken pathname)
 	(chicken file))
 
@@ -129,10 +130,11 @@
 ;;
 
 (define (stager-run stager runner)
-  (for-each
-   (lambda (test)
-     (runner test))
-   (hypertrace-stager-tests stager)))
+  (test-group (hypertrace-stager-name stager)
+	      (for-each
+	       (lambda (test)
+		 (runner test))
+	       (hypertrace-stager-tests stager))))
 
 ;;
 ;; Make a HyperTrace stager record initializer out of the record with the
