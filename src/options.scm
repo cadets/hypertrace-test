@@ -1,9 +1,9 @@
 (declare (unit hypertrace-option-parser))
 
 (import scheme
-	(chicken process-context)
-	(chicken port)
-	args)
+        (chicken process-context)
+        (chicken port)
+        args)
 
 ;;
 ;; Display usage information about command-line options. These messages are
