@@ -14,7 +14,7 @@ BEGIN {
   trace(0);
 }
 EOF
-           )
+        )
 
 if [ -z ${orig_elf} ]
 then

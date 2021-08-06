@@ -14,7 +14,7 @@ BEGIN {
   x = 0xDEADBEEF;
 }
 EOF
-           )
+        )
 
 if [ -z ${orig_elf} ]
 then
