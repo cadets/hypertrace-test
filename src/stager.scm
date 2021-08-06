@@ -48,14 +48,43 @@
 (define-syntax with-loaded-contents
   (er-macro-transformer
    (lambda (exp r c)
-     (let ((test-path (cadr   exp))
-           (var-name  (caddr  exp))
+     (let ((test-path (cadr  exp))
+           (var-name  (caddr exp))
            (body      (cdddr exp)))
        `(,(r 'let) ((,var-name #f))
          (,(r 'load) ,test-path
           (,(r 'lambda) (x) (,(r 'set!) ,var-name x)))
          ,@body)))))
 
+
+;;
+;; A macro that lets us seamlessly accept both lists of tests and individual
+;; tests without needing to do a bunch of manual checks. It essentially loops
+;; over the list for us if we have a test list, and otherwise simply binds the
+;; variable the user asked for to the one test that was passed in.
+;;
+;; Example usage:
+;;
+;;  (with-test some-quoted-expr test-variable-name
+;;    (do-stuff-with test-variable-name))
+;;
+
+(define-syntax with-test
+  (er-macro-transformer
+   (lambda (exp r c)
+     (let ((exp-to-eval (cadr  exp))
+           (var-name    (caddr exp))
+           (body        (cdddr exp)))
+       `(,(r 'let) ((tests (,(r 'eval) ,exp-to-eval)))
+         (,(r 'if) (,(r 'list?) tests)
+          (,(r 'for-each)
+           (,(r 'lambda) (test)
+            (,(r 'let) ((,var-name test))
+             ,@body))
+           tests)
+          (,(r 'let) ((,var-name tests))
+           ,@body)))))))
+            
 
 ;;
 ;; The stage-tests procedure goes through each of the *.scm files in 'path'. For
@@ -83,9 +112,11 @@
            (with-loaded-contents test-file loaded-contents
              (when (>= hypertrace-test-verbosity 2)
                (print "Staging  " test-file))
-             
-             (let ((test (eval loaded-contents)))
-               ;; Normalize the in-file path and make it absolute.
+
+             (with-test loaded-contents test
+               ;;
+               ;; XXX: Insert a hypertrace-test? check?
+               ;;
                (set! (hypertrace-test-in-file test)
                  (normalize-pathname
                   (string-append (hypertrace-stager-directory-path stager)
