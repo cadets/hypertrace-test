@@ -111,18 +111,19 @@
                 (test '(1 2 3) (hypertrace-stager-tests test-stager))
                 (test "Bar" (hypertrace-stager-directory-path test-stager)))
 
-    (let ((stagers (load-stagers hypertrace-test-dir)))
-      (for-each
-       (lambda (stager)
-         (stage-tests stager))
-       stagers)
-
-      (let ((runner (if (alist-ref 'bare options)
-                        bare-run-test
-                        run-test)))
+    (when (not (alist-ref 'no-stagers options))
+      (let ((stagers (load-stagers hypertrace-test-dir)))
         (for-each
          (lambda (stager)
-           (stager-run stager runner))
-         stagers)))))
+           (stage-tests stager))
+         stagers)
+
+        (let ((runner (if (alist-ref 'bare options)
+                          bare-run-test
+                          run-test)))
+          (for-each
+           (lambda (stager)
+             (stager-run stager runner))
+           stagers))))))
 
 (main command-line-arguments)
