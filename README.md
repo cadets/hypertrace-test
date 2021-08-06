@@ -15,8 +15,6 @@ is unclear what they would be filtered on.
 * FreeBSD port.
 * Aggregation of results and reporting (HTML, JUnit)
 * Dependencies in stagers for binaries
-* Multiple tests specified in one file (as a list)
-
 
 # Build/Install guide
 
