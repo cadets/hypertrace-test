@@ -41,11 +41,11 @@
 ;;
 ;; Example usage:
 ;;
-;;  (with-loaded-tests "/path/to/foo.scm" variable-name
-;;   (call-something-on variable-name))
+;;  (with-loaded-contents "/path/to/foo.scm" variable-name
+;;    (call-something-on variable-name))
 ;;
 
-(define-syntax with-loaded-tests
+(define-syntax with-loaded-contents
   (er-macro-transformer
    (lambda (exp r c)
      (let ((test-path (cadr   exp))
@@ -80,7 +80,7 @@
        (lambda (test-file)
          (when (and (file-exists?   test-file)
                     (file-readable? test-file))
-           (with-loaded-tests test-file loaded-contents
+           (with-loaded-contents test-file loaded-contents
              (when (>= hypertrace-test-verbosity 2)
                (print "Staging  " test-file))
              
