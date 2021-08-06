@@ -92,7 +92,8 @@
 ;; expression. The expectation is that tests are specified using
 ;; mk-hypertrace-test and will return a hypertrace-test record once 'eval' is
 ;; called on the loaded expression. See the 'test/' directory in the root
-;; checkout of this repository for sample tests.
+;; checkout of this repository for sample tests. Note that each *.scm file can
+;; also contain a list of tests, not just one test.
 ;;
 ;; NOTE: It doesn't actually have to be (mk-hypertrace-test ...). In fact, it
 ;; can be any valid scheme code, as long as calling (eval ...) on the file
