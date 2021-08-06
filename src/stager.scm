@@ -72,10 +72,11 @@
                                  (hypertrace-test-in-file test))))
 
                ;; Normalize the expected-out path and make it absolute.
-               (set! (hypertrace-test-expected-out test)
-                 (normalize-pathname
-                  (string-append (hypertrace-stager-directory-path stager)
-                                 (hypertrace-test-expected-out test))))
+               (when (not (equal? (hypertrace-test-expected-out test) #f))
+                 (set! (hypertrace-test-expected-out test)
+                   (normalize-pathname
+                    (string-append (hypertrace-stager-directory-path stager)
+                                   (hypertrace-test-expected-out test)))))
 
                ;;
                ;; In case that we can both read and execute the in-file (a shell
@@ -86,10 +87,12 @@
                ;; error *before* we start executing any staged tests that
                ;; something has gone wrong in the setup.
                ;;
-               (if (and (file-exists?     (hypertrace-test-in-file test))
-                        (file-executable? (hypertrace-test-in-file test))
-                        (file-exists?     (hypertrace-test-expected-out test))
-                        (file-readable?   (hypertrace-test-expected-out test)))
+               (if (and (file-exists?               (hypertrace-test-in-file test))
+                        (file-executable?           (hypertrace-test-in-file test))
+                        (or  (equal? #f             (hypertrace-test-expected-out test))
+                             (and (file-exists?     (hypertrace-test-expected-out test))
+                                  (file-readable?   (hypertrace-test-expected-out test)))))
+                   ;; If we can execute this test, stage it.
                    (stage stager test)
                    (begin
                      ;; in-file does not exist.
@@ -118,9 +121,7 @@
                        (print "ERROR: Cannot read "
                               (hypertrace-test-expected-out test) ". Exiting.")
                        (exit 1))))))))
-       test-files)
-      (when (>= hypertrace-test-verbosity 2)
-        (display "\n")))))
+       test-files))))
 
 
 
