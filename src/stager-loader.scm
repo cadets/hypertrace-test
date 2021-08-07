@@ -4,10 +4,36 @@
         fmt
         srfi-1
         (chicken file)
-        (chicken pathname))
+        (chicken pathname)
+        directory-utils)
 
 (declare (uses hypertrace-stager))
 
+;;
+;; Checks if binary dependencies specified either as a full path (e.g. /bin/sh)
+;; or just the binary name which exists in PATH (e.g. diff, find, etc.) exist
+;; for a given stager.
+;;
+;; XXX: This might belong in util, as it really just takes a string list.
+;;
+
+(define (bindeps-satisfied? stager)
+  (fold
+   (lambda (dep satisfied?)
+     (let ((pathname (which-command-pathname dep)))
+       (if (and satisfied?
+                (or (and (file-exists?     dep)
+                         (file-executable? dep))
+                    pathname))
+           satisfied?
+           (begin
+             ;; Only warn on the first unsatisfied dependency.
+             (when (and (>= hypertrace-test-verbosity 1)
+                        satisfied?)
+               (print "WARNING: '" dep "' is not satisfied for stager '"
+                      (hypertrace-stager-name stager) "'. Skipping."))
+             #f))))
+     #t (hypertrace-stager-binary-dependencies stager)))
 
 ;;
 ;; This procedure takes a path and loads all of the *.scm files present in that
@@ -45,21 +71,7 @@
             ;; Only load the stager if we can satisfy all of the dependencies
             ;; of the stager.
             ;;
-            ;; FIXME: We probably want to allow symlinks to these dependencies.
-            ;;
-            (if (fold
-                 (lambda (dep satisfied?)
-                   (if (and satisfied?
-                            (file-exists?     dep)
-                            (file-executable? dep))
-                       satisfied?
-                       (begin
-                         (when (>= hypertrace-test-verbosity 1)
-                           (print "WARNING: " dep " is not satisfied for stager "
-                                  (hypertrace-stager-name stager) ". Skipping."))
-                         #f)))
-                 #t (hypertrace-stager-binary-dependencies stager))
-
+            (if (bindeps-satisfied? stager)
                 ;; Then, stage the stager and keep going.
                 (begin
                   ;; Compute the absolute path of the test directory for this stager.
