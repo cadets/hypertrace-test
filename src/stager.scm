@@ -51,10 +51,9 @@
      (let ((test-path (cadr  exp))
            (var-name  (caddr exp))
            (body      (cdddr exp)))
-       `(,(r 'let) ((,var-name #f))
-         (,(r 'load) ,test-path
-          (,(r 'lambda) (x) (,(r 'set!) ,var-name x)))
-         ,@body)))))
+       `(,(r 'load) ,test-path
+         (,(r 'lambda) (x) (,(r 'let) ((,var-name x))
+                            ,@body)))))))
 
 
 ;;
