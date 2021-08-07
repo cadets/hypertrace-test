@@ -36,6 +36,11 @@
           
           (load stager-file (lambda (x) (set! loaded-contents x)))
           (let ((stager (eval loaded-contents)))
+            ;; Make sure we're loading an actual stager.
+            (when (not (hypertrace-stager? stager))
+              (print "Expected a stager, but got: " loaded-contents)
+              (exit 1))
+            
             ;; Compute the absolute path of the test directory for this stager.
             (set! (hypertrace-stager-directory-path stager)
               (normalize-pathname (string-append
