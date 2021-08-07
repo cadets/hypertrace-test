@@ -3,4 +3,5 @@
    (directory-path "./elf-checksum/")
    (binary-dependencies ("/bin/sh"
                          "dtrace"
-                         "sha256sum"))))
+                         "sha256sum"
+                         "dirname"))))
