@@ -2,7 +2,7 @@
 
 orig_elf=$(dtrace -q -E -e -s /dev/stdin <<EOF
 BEGIN {
-  x = 0xDEADBEEF;
+  trace(ustackdepth);
 }
 EOF
         )
