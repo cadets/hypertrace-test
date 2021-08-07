@@ -40,15 +40,43 @@
             (when (not (hypertrace-stager? stager))
               (print "Expected a stager, but got: " loaded-contents)
               (exit 1))
-            
-            ;; Compute the absolute path of the test directory for this stager.
-            (set! (hypertrace-stager-directory-path stager)
-              (normalize-pathname (string-append
-                                   hypertrace-test-dir
-                                   (hypertrace-stager-directory-path stager))))
-            
-            (if (eq? '() rest)
-                (cons* stager stagers)
-                (loop (car rest)
-                      (cdr rest)
-                      (cons* stager stagers)))))))))
+
+            ;;
+            ;; Only load the stager if we can satisfy all of the dependencies
+            ;; of the stager.
+            ;;
+            ;; FIXME: We probably want to allow symlinks to these dependencies.
+            ;;
+            (if (fold
+                 (lambda (dep satisfied?)
+                   (if (and satisfied?
+                            (file-exists?     dep)
+                            (file-executable? dep))
+                       satisfied?
+                       (begin
+                         (when (>= hypertrace-test-verbosity 1)
+                           (print "WARNING: " dep " is not satisfied for stager "
+                                  (hypertrace-stager-name stager) ". Skipping."))
+                         #f)))
+                 #t (hypertrace-stager-binary-dependencies stager))
+
+                ;; Then, stage the stager and keep going.
+                (begin
+                  ;; Compute the absolute path of the test directory for this stager.
+                  (set! (hypertrace-stager-directory-path stager)
+                    (normalize-pathname (string-append
+                                         hypertrace-test-dir
+                                         (hypertrace-stager-directory-path stager))))
+                  
+                  (if (eq? '() rest)
+                      (cons* stager stagers)
+                      (loop (car rest)
+                            (cdr rest)
+                            (cons* stager stagers))))
+                
+                ;; Else, don't stage the stager and keep going.
+                (if (eq? '() rest)
+                    stagers
+                    (loop (car rest)
+                          (cdr rest)
+                          stagers)))))))))
