@@ -8,13 +8,14 @@
 
 ;;
 ;; Record:
-;;  name           : string; name of stager
-;;  tests          : list; list of staged tests
-;;  directory-path : string; relative path to test directory
+;;  name                : string; name of stager
+;;  tests               : list; list of staged tests
+;;  directory-path      : string; relative path to test directory
+;;  binary-dependencies : list; list of binary dependencies (e.g. /bin/sh)
 ;;
 
 (define-record-type hypertrace-stager
-  (make-hypertrace-stager name tests directory-path)
+  (make-hypertrace-stager name tests directory-path binary-dependencies)
   hypertrace-stager?
   (name hypertrace-stager-name
         (setter hypertrace-stager-name)) ;string
@@ -24,6 +25,9 @@
 
   (directory-path hypertrace-stager-directory-path
                   (setter hypertrace-stager-directory-path)) ;string
+
+  (binary-dependencies hypertrace-stager-binary-dependencies
+                       (setter hypertrace-stager-binary-dependencies)) ;list
   )
 
 
@@ -144,9 +148,10 @@
 ;;
 ;; Make a HyperTrace stager record initializer out of the record with the
 ;; following default values:
-;;  name           : #f
-;;  tests          : empty list
-;;  directory-path : #f
+;;  name                : #f
+;;  tests               : empty list
+;;  directory-path      : #f
+;;  binary-dependencies : empty list
 ;;
 
-(make-record 'hypertrace-stager '(#f (list) #f))
+(make-record 'hypertrace-stager '(#f (list) #f (list)))
