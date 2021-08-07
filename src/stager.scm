@@ -3,7 +3,8 @@
 (import scheme
         test
         (chicken pathname)
-        (chicken file))
+        (chicken file)
+        (hypertrace util))
 
 ;;
 ;; Record:
@@ -36,56 +37,6 @@
 
 
 ;;
-;; A simple macro to avoid messy syntax when loading contents of a particular
-;; file that contains tests.
-;;
-;; Example usage:
-;;
-;;  (with-loaded-contents "/path/to/foo.scm" variable-name
-;;    (call-something-on variable-name))
-;;
-
-(define-syntax with-loaded-contents
-  (er-macro-transformer
-   (lambda (exp r c)
-     (let ((test-path (cadr  exp))
-           (var-name  (caddr exp))
-           (body      (cdddr exp)))
-       `(,(r 'load) ,test-path
-         (,(r 'lambda) (x) (,(r 'let) ((,var-name x))
-                            ,@body)))))))
-
-
-;;
-;; A macro that lets us seamlessly accept both lists of tests and individual
-;; tests without needing to do a bunch of manual checks. It essentially loops
-;; over the list for us if we have a test list, and otherwise simply binds the
-;; variable the user asked for to the one test that was passed in.
-;;
-;; Example usage:
-;;
-;;  (with-test some-quoted-expr test-variable-name
-;;    (do-stuff-with test-variable-name))
-;;
-
-(define-syntax with-test
-  (er-macro-transformer
-   (lambda (exp r c)
-     (let ((exp-to-eval (cadr  exp))
-           (var-name    (caddr exp))
-           (body        (cdddr exp)))
-       `(,(r 'let) ((tests (,(r 'eval) ,exp-to-eval)))
-         (,(r 'if) (,(r 'list?) tests)
-          (,(r 'for-each)
-           (,(r 'lambda) (test)
-            (,(r 'let) ((,var-name test))
-             ,@body))
-           tests)
-          (,(r 'let) ((,var-name tests))
-           ,@body)))))))
-            
-
-;;
 ;; The stage-tests procedure goes through each of the *.scm files in 'path'. For
 ;; each file it encounters, it loads it into the current environment as a quoted
 ;; expression. The expectation is that tests are specified using
@@ -113,7 +64,7 @@
              (when (>= hypertrace-test-verbosity 2)
                (print "Staging  " test-file))
 
-             (with-test loaded-contents test
+             (with-item loaded-contents test
                ;;
                ;; XXX: Insert a hypertrace-test? check?
                ;;
