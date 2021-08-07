@@ -14,7 +14,6 @@ is unclear what they would be filtered on.
 * Custom diffing functions (e.g. allowing different ordering, not exact match).
 * FreeBSD port.
 * Aggregation of results and reporting (HTML, JUnit)
-* Dependencies in stagers for binaries
 
 # Build/Install guide
 
