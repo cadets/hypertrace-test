@@ -6,6 +6,10 @@
  (mk-hypertrace-test
   '((name "BEGIN probe - trace(curthread->td_tid)")
     (in-file "begin/trace-deref-curthread.sh")))
+ 
+ (mk-hypertrace-test
+  '((name "BEGIN probe - trace(curthread->td_proc->p_ucred->cr_uid)")
+    (in-file "begin/trace-deref-curthread-multiple.sh")))
 
  (mk-hypertrace-test
   '((name "BEGIN probe - trace D struct (non-pointer)")
