@@ -64,10 +64,6 @@
     (in-file "begin/opt-dynvarsize.sh")))
 
  (mk-hypertrace-test
-  '((name "BEGIN probe - option errexit")
-    (in-file "begin/opt-errexit.sh")))
-
- (mk-hypertrace-test
   '((name "BEGIN probe - option flowindent")
     (in-file "begin/opt-flowindent.sh")))
 
@@ -82,10 +78,6 @@
  (mk-hypertrace-test
   '((name "BEGIN probe - option jstackstrsize")
     (in-file "begin/opt-jstackstrsize.sh")))
-
- (mk-hypertrace-test
-  '((name "BEGIN probe - option noresolve")
-    (in-file "begin/opt-noresolve.sh")))
 
  (mk-hypertrace-test
   '((name "BEGIN probe - option nspec")
@@ -122,10 +114,6 @@
  (mk-hypertrace-test
   '((name "BEGIN probe - option switchrate")
     (in-file "begin/opt-switchrate.sh")))
-
- (mk-hypertrace-test
-  '((name "BEGIN probe - option uresolve")
-    (in-file "begin/opt-uresolve.sh")))
 
  (mk-hypertrace-test
   '((name "BEGIN probe - option ustackframes")
