@@ -4,39 +4,15 @@
 
 (import scheme
         
-        (chicken base)
-        (chicken io)
         (chicken string)
         (chicken process)
+        (chicken base)
+        (chicken io)
         
         srfi-1
         
-        test)
-
-;;
-;; Reads a file line by line and returns a string with the contents
-;; of that file.
-;;
-
-(define (read-test-file filepath)
-  (when (not (equal? filepath #f))
-    (let ((fh (open-input-file filepath)))
-      ;;
-      ;; Annoyingly, we have to do this manually instead of just using a procedure
-      ;; called reverse-string-append because we need to plug in a cdr in there
-      ;; in order to avoid a leading '\n' in our string. It however, is not too
-      ;; bad.
-      ;;
-      (apply string-append
-             (cdr
-              (reverse
-               (let loop ((c (read-line fh))
-                          (lines (list)))
-                 (if (eof-object? c)
-                     (begin
-                       (close-input-port fh)
-                       lines)
-                     (loop (read-line fh) (cons* c "\n" lines))))))))))
+        test
+        (hypertrace util))
 
 
 ;;
@@ -70,7 +46,7 @@
          (expected-out (hypertrace-test-expected-out test-to-run))
          (cmp-method   (hypertrace-test-cmp-method test-to-run))
          (run-method   (hypertrace-test-run-method test-to-run))
-         (expected-str (read-test-file expected-out)))
+         (expected-str (read-file expected-out)))
     ;; Spawn the process and grab its ports.
     (receive (stdout stdin pid stderr) (process* in-file)
       ;; Wait for the process to end.
