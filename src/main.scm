@@ -34,6 +34,14 @@
 
 (define hypertrace-test-dir #f)
 
+
+;;
+;; Stager currently being processed.
+;;
+
+(define current-stager #f)
+
+
 ;;
 ;; Main entry point of the program.
 ;;
