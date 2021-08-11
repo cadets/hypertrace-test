@@ -3,8 +3,13 @@
 (module (hypertrace util) (with-environment-variable
                            with-environment-variable-if-not-f
                            with-loaded-contents
-                           with-item)
-  (import scheme)
+                           with-item
+                           read-file)
+  (import scheme
+          srfi-1
+          (chicken base)
+          (chicken io))
+  
   (import-for-syntax (chicken process-context))
 
 
@@ -93,5 +98,32 @@
              items)
             (,(r 'let) ((,var-name items))
              ,@body)))))))
+
+
+  
+  ;;
+  ;; Reads a file line by line and returns a string with the contents
+  ;; of that file.
+  ;;
+
+  (define (read-file filepath)
+    (when (not (equal? filepath #f))
+      (let ((fh (open-input-file filepath)))
+        ;;
+        ;; Annoyingly, we have to do this manually instead of just using a procedure
+        ;; called reverse-string-append because we need to plug in a cdr in there
+        ;; in order to avoid a leading '\n' in our string. It however, is not too
+        ;; bad.
+        ;;
+        (apply string-append
+               (cdr
+                (reverse
+                 (let loop ((c (read-line fh))
+                            (lines (list)))
+                   (if (eof-object? c)
+                       (begin
+                         (close-input-port fh)
+                         lines)
+                       (loop (read-line fh) (cons* c "\n" lines))))))))))
 
   )
