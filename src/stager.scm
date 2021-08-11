@@ -6,6 +6,8 @@
         (chicken file)
         (hypertrace util))
 
+(import-for-syntax (chicken file))
+
 ;;
 ;; Record:
 ;;  name                : string; name of stager
@@ -55,6 +57,9 @@
 ;;
 
 (define (stage-tests stager)
+  ;; Set the currently running stager. We might want to change this later.
+  (set! current-stager (hypertrace-stager-directory-path stager))
+  
   (let ((path (hypertrace-stager-directory-path stager)))
     (when (not (directory-exists? path))
       (print path " is not a valid directory."))
@@ -69,22 +74,26 @@
                (print "Staging  " test-file))
 
              (with-item loaded-contents test
-               ;;
-               ;; XXX: Insert a hypertrace-test? check?
-               ;;
-               ;; Normalize the in-file path and make it absolute.
-               ;;
+               (when (not (hypertrace-test? test))
+                 (print "Expected #<hypertrace-test> record, but got: " test)
+                 (exit 1))
+
+               ;; Normalize the in-file path and make it absolute if needed.
                (set! (hypertrace-test-in-file test)
                  (normalize-pathname
-                  (string-append (hypertrace-stager-directory-path stager)
-                                 (hypertrace-test-in-file test))))
+                  (if (absolute-pathname? (hypertrace-test-in-file test))
+                      (hypertrace-test-in-file test)
+                      (string-append (hypertrace-stager-directory-path stager)
+                                     (hypertrace-test-in-file test)))))
 
-               ;; Normalize the expected-out path and make it absolute.
+               ;; Normalize expected-out path and make it absolute if needed.
                (when (not (equal? (hypertrace-test-expected-out test) #f))
                  (set! (hypertrace-test-expected-out test)
                    (normalize-pathname
-                    (string-append (hypertrace-stager-directory-path stager)
-                                   (hypertrace-test-expected-out test)))))
+                    (if (absolute-pathname? (hypertrace-test-expected-out test))
+                        (hypertrace-test-expected-out test)
+                        (string-append (hypertrace-stager-directory-path stager)
+                                       (hypertrace-test-expected-out test))))))
 
                ;;
                ;; In case that we can both read and execute the in-file (a shell
