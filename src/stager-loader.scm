@@ -33,7 +33,7 @@
                (print "WARNING: '" dep "' is not satisfied for stager '"
                       (hypertrace-stager-name stager) "'. Skipping."))
              #f))))
-     #t (hypertrace-stager-binary-dependencies stager)))
+   #t (hypertrace-stager-binary-dependencies stager)))
 
 ;;
 ;; This procedure takes a path and loads all of the *.scm files present in that
