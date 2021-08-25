@@ -85,9 +85,10 @@
   
   (receive (options operands)
       (args:parse (args) hypertrace-options)
-    
+
+    ;; Default to verbosity 1 (print all of the tests as they get executed).
     (set! hypertrace-test-verbosity
-      (or (alist-ref 'verbose options) 0))
+      (or (alist-ref 'verbose options) 1))
 
     (when (<= hypertrace-test-verbosity 0)
       (set! (current-test-verbosity) #f))
