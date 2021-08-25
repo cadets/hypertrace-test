@@ -16,12 +16,12 @@
         (hypertrace util))
 
 (define (successfmt str)
-  (if hypertrace-test-ansi-colors?
+  (if ansi-support?
       (fmt-green str)
       str))
 
 (define (failfmt str)
-  (if hypertrace-test-ansi-colors?
+  (if ansi-support?
       (fmt-red str)
       str))
 
