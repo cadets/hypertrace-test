@@ -17,15 +17,15 @@ OBJS := $(patsubst %.scm,$(BUILD_DIR)/%.o,$(SRCS))
 
 MODULE_DIR := modules
 
-STAGERS_SRCS := $(shell find $(STAGERS_SRCDIR) -name *.scm -exec basename {} \;)
+STAGERS_SRCS := $(shell find $(STAGERS_SRCDIR) -name '*.scm' -exec basename {} \;)
 STAGERS_DSTS := $(patsubst %.scm,$(STAGERS_DIR)/%.scm,$(STAGERS_SRCS))
 
 .SILENT:
-.PHONY: $(MODULE_DIR) move_imports $(STAGERS_DIR) move_tests
+.PHONY: $(MODULE_DIR) move_imports $(STAGERS_DIR) move_tests clean cleandir distclean realclean
 
 $(PROGRAM): $(OBJS) $(STAGERS_DIR) $(STAGERS_DSTS) $(BIN_DIR) move_tests
 	@echo "LD     $(PROGRAM)"
-	@$(CSC) $(CSC_FLAGS) $(shell find $(BUILD_DIR) -name '*.o') build/util.o -o $(BIN_DIR)/$(PROGRAM)
+	@$(CSC) $(CSC_FLAGS) $(shell find $(BUILD_DIR) -name '*.o') -o $(BIN_DIR)/$(PROGRAM)
 
 $(BUILD_DIR)/%.o : $(SRC_DIR)/%.scm | $(MODULE_DIR) move_imports
 	@echo "CSC    $<"
@@ -73,3 +73,4 @@ clean:
 	@rm -f *import.scm
 
 cleandir distclean realclean: clean
+
