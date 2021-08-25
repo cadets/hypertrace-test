@@ -99,7 +99,13 @@
 
     (set! hypertrace-test-tmp?
       (or (alist-ref 'use-tmpfs options) #f))
-    
+
+    (let ((report (alist-ref 'report options)))
+      (when report
+        (with-loaded-contents report loaded-contents
+          (print loaded-contents))
+        (exit 0)))
+      
     (test-group "Field tests"
                 (define test-test (mk-hypertrace-test '((name "Foo")
                                                         (expected-out "Bar"))))
