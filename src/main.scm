@@ -39,13 +39,6 @@
 
 
 ;;
-;; Do we have support for ANSI color escape codes?
-;;
-
-(define hypertrace-test-ansi-colors? #f)
-
-
-;;
 ;; Stager currently being processed. This variable can contain any information
 ;; in a stager that we wish to expose to consumers (e.g. macros or procedures).
 ;; Currently, it contains the directory path when loading stagers, and
@@ -89,9 +82,6 @@
 
   ;; Create a canonical path name.
   (set! hypertrace-test-dir (normalize-pathname hypertrace-test-dir))
-
-  ;; Figure out ANSI support.
-  (set! hypertrace-test-ansi-colors? ansi-support?)
   
   (receive (options operands)
       (args:parse (args) hypertrace-options)
@@ -144,7 +134,7 @@
              ((equal? report "html")  (report-html  pass fail))
              ((equal? report "json")  (report-json  pass fail))
              ((equal? report "junit") (report-junit pass fail))
-             ((equal? report "text")  (report-text  pass fail)))
+             ((equal? report "text")  (report-text  pass fail ansi-support?)))
             (exit 0)))))
       
     (test-group "Field tests"
