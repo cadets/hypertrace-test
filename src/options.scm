@@ -47,7 +47,7 @@
 
    (args:make-option
     (R report)      (optional: "html|json|junit|text")
-    "Report results from a previous run (default: text)."
+    "Report results from a previous run [default: text]."
     (set! arg (or arg "text")))
 
    (args:make-option
