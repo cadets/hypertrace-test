@@ -4,6 +4,7 @@
         test
         fmt
         fmt-color
+        srfi-1
         (chicken pathname)
         (chicken file)
         (hypertrace util))
@@ -161,10 +162,10 @@
        nl (make-string 78 #\-) nl)
 
   ;; Run all of the staged tests for the current stager.
-  (for-each
-   (lambda (test)
-     (runner test))
-   (hypertrace-stager-tests stager)))
+  (fold
+   (lambda (test result)
+     (cons (runner test) result))
+   '() (hypertrace-stager-tests stager)))
 
 
 ;;
