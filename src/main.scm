@@ -197,6 +197,9 @@
                (report-file (if hypertrace-test-tmp?
                                 "/tmp/hypertrace-test.report"
                                 "hypertrace-test.report")))
+          
+          ;; Print a newline after we're done with all the stagers.
+          (display "\n")
           (call-with-output-file report-file
             (lambda (port)
               (write result port)
