@@ -51,9 +51,8 @@
     (set! arg (or arg "text")))
 
    (args:make-option
-    (p report-path) (optional: "PATH")
-    "Path to the report file."
-    (set! arg (or arg "hypertrace-test.report")))
+    (p report-path) #:required
+    "Path to the report file.")
 
    (args:make-option
     (h help)        #:none
