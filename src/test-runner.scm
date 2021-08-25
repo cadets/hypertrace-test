@@ -11,8 +11,28 @@
         
         srfi-1
         
-        test
+        fmt
+        fmt-color
         (hypertrace util))
+
+(define (successfmt str)
+  (if hypertrace-test-ansi-colors?
+      (fmt-green str)
+      str))
+
+(define (failfmt str)
+  (if hypertrace-test-ansi-colors?
+      (fmt-red str)
+      str))
+
+(define (hypertrace-test-run name fst snd)
+  (if (equal? fst snd)
+      (begin
+        (when (>= hypertrace-test-verbosity 1)
+          (fmt #t "[  " (successfmt "OK") "  ]  " name nl)))
+      (begin
+        (when (>= hypertrace-test-verbosity 1)
+          (fmt #f "[ " (failfmt "FAIL") " ]  " name nl)))))
 
 
 ;;
@@ -28,7 +48,7 @@
          (expected-out (hypertrace-test-expected-out test))
          (cmp-method   (hypertrace-test-cmp-method test))
          (run-method   (hypertrace-test-run-method test)))
-    (test-assert name #t)))
+    (hypertrace-test-run name #t #t)))
 
 
 ;;
@@ -68,20 +88,23 @@
                 (let ((errors (read-buffered stderr)))
                   (when (not (equal? errors ""))
                     (print "stderr (" in-file "): " errors))))
-              (test-assert name #f))
+              (hypertrace-test-run name #t #f))
             
             ;; Check the process stdout with our expected output.
             (let ((contents (read-line stdout))
                   (errors   (read-buffered stderr)))
-              (begin
                 ;;
                 ;; If we don't have an expected-out path, that means we only
                 ;; want to compare the exit status of the executable we are
                 ;; running.
                 ;;
                 (if (equal? expected-out #f)
-                    (test name 0 status)
-                    (test name expected-str contents))
+                    (hypertrace-test-run name 0 status)
+                    (hypertrace-test-run name expected-str contents))
                 (when (and (>= hypertrace-test-verbosity 2)
                            (not (equal? errors "")))
-                  (print "stderr (" in-file "): " errors)))))))))
+                  (print "stderr (" in-file "): " errors))
+
+                (close-input-port stdout)
+                (close-input-port stderr)
+                (close-output-port stdin)))))))
