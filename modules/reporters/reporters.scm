@@ -13,7 +13,6 @@
   (include "reporter-junit.scm")
   (include "reporter-text.scm")
 
-
   (define (report-html passed failed)
     (generate-html-report passed failed))
   
@@ -23,7 +22,7 @@
   (define (report-junit passed failed)
     (generate-junit-report passed failed))
 
-  (define (report-text passed failed)
-    (generate-text-report passed failed))
+  (define (report-text passed failed ansi-support?)
+    (generate-text-report passed failed ansi-support?))
 
   )
