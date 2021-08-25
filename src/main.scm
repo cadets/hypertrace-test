@@ -102,9 +102,32 @@
 
     (let ((report (alist-ref 'report options)))
       (when report
-        (with-loaded-contents report loaded-contents
-          (print loaded-contents))
-        (exit 0)))
+        (with-loaded-contents report results
+          (let* ((pass-and-fail
+                  (fold
+                   (lambda (result buckets)
+                     (let ((stager (vector-ref result 0))
+                           (name   (vector-ref result 1))
+                           (p-or-f (vector-ref result 2)))
+                       (case p-or-f
+                         ;; Prepend to pass list.
+                         ('pass `(,(cons `(,stager ,name) (car buckets))
+                                  ,(cadr buckets)))
+                         
+                         ;; Prepend to fail list.
+                         ('fail `(,(car buckets)
+                                  ,(cons `(,stager ,name) (cadr buckets))))
+
+                         ;; We hit some *really* weird case, so we just bail out
+                         ;; of the program all together with an exit code of 1.
+                         (else
+                          (begin
+                            (print "Expected 'pass' or 'fail', but got " p-or-f)
+                            (exit 1))))))
+                   (list '() '()) results))
+                 (pass (car pass-and-fail))
+                 (fail (cadr pass-and-fail)))
+            (exit 0)))))
       
     (test-group "Field tests"
                 (define test-test (mk-hypertrace-test '((name "Foo")
