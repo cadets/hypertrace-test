@@ -3,6 +3,7 @@
         (chicken pathname)
         test
         args
+        srfi-1
         (hypertrace util))
 
 (declare (uses hypertrace-util))
@@ -53,6 +54,12 @@
 
 
 ;;
+;; Write report to /tmp? Default: no.
+;;
+
+(define hypertrace-test-tmp? #f)
+
+;;
 ;; Main entry point of the program.
 ;;
 
@@ -90,6 +97,9 @@
                (alist-ref 'bare options))
       (print "Running tests in bare mode..."))
 
+    (set! hypertrace-test-tmp?
+      (or (alist-ref 'use-tmpfs options) #f))
+    
     (test-group "Field tests"
                 (define test-test (mk-hypertrace-test '((name "Foo")
                                                         (expected-out "Bar"))))
@@ -139,12 +149,21 @@
            (stage-tests stager))
          stagers)
 
-        (let ((runner (if (alist-ref 'bare options)
-                          bare-run-test
-                          run-test)))
-          (for-each
-           (lambda (stager)
-             (stager-run stager runner))
-           stagers))))))
+        (let* ((runner (if (alist-ref 'bare options)
+                           bare-run-test
+                           run-test))
+               (result (flatten (fold
+                                 (lambda (stager result)
+                                   (cons* (stager-run stager runner) result))
+                                 '() stagers)))
+               (report-file (if hypertrace-test-tmp?
+                                "/tmp/hypertrace-test.report"
+                                "hypertrace-test.report")))
+          (call-with-output-file report-file
+            (lambda (port)
+              (write result port)
+              (when (>= hypertrace-test-verbosity 2)
+                (print "Written report to " report-file)))
+            #:binary))))))
 
 (main command-line-arguments)
