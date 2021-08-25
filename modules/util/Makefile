@@ -2,15 +2,11 @@ CSC := $(shell which csc || which csc5)
 CSC_FLAGS = -O3
 
 BUILD_DIR := ../../build
-
-UTIL_SRCS := $(shell find . -name '*.scm' -and ! -name '*import.scm' -exec basename {} \;)
-UTIL_OBJS := $(patsubst %.scm,$(BUILD_DIR)/%.o,$(UTIL_SRCS))
+MODULE := util
 
 .PHONY: all
 
-all: $(UTIL_OBJS)
-
-$(BUILD_DIR)/%.o : %.scm
-	@echo "CSC    $<"
-	@$(CSC) -c -J $(CSC_FLAGS) $< -o $@
+all:
+	@echo "CSC    $(MODULE).scm"
+	@$(CSC) -c -J $(CSC_FLAGS) $(MODULE).scm -o $(BUILD_DIR)/$(MODULE).o
 
