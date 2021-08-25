@@ -42,6 +42,10 @@
     (use-tmpfs)  #:none               "Use tmpfs to save the report.")
 
    (args:make-option
+    (R report)   (optional: "PATH")   "Report results from a previous run."
+    (set! arg (or arg "hypertrace-test.report")))
+
+   (args:make-option
     (h help)     #:none               "Display this help text"
     (usage))))
 
