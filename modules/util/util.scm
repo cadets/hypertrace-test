@@ -4,9 +4,11 @@
                            with-environment-variable-if-not-f
                            with-loaded-contents
                            with-item
-                           read-file)
+                           read-file
+                           ansi-support?)
   (import scheme
           srfi-1
+          (chicken process-context)
           (chicken base)
           (chicken io))
   
@@ -125,5 +127,23 @@
                          (close-input-port fh)
                          lines)
                        (loop (read-line fh) (cons* c "\n" lines))))))))))
+
+  
+  ;;
+  ;; Helper variable for ansi-support?.
+  ;;
+  
+  (define terminals
+    '("rxvt" "rxvt-unicode-256color" "screen" "screen-256color" "vt100"
+      "xterm" "xterm-256color" "xterm-color" "kterm" "linux"))
+
+  
+  ;;
+  ;; Figures out if the output port supports ANSI colors.
+  ;;
+  
+  (define ansi-support?
+    (and (##sys#tty-port? (current-output-port))
+         (member (get-environment-variable "TERM") terminals)))
 
   )
