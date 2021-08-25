@@ -2,6 +2,8 @@
 
 (import scheme
         test
+        fmt
+        fmt-color
         (chicken pathname)
         (chicken file)
         (hypertrace util))
@@ -148,11 +150,22 @@
 ;;
 
 (define (stager-run stager runner)
-  (test-group (hypertrace-stager-name stager)
-              (for-each
-               (lambda (test)
-                 (runner test))
-               (hypertrace-stager-tests stager))))
+  ;; Pass the stager name down with current-stager.
+  (set! current-stager (hypertrace-stager-name stager))
+
+  ;; Report the current stager.
+  (fmt #t
+       nl (fmt-bold
+           (fmt-underline
+            (hypertrace-stager-name stager)))
+       nl (make-string 78 #\-) nl)
+
+  ;; Run all of the staged tests for the current stager.
+  (for-each
+   (lambda (test)
+     (runner test))
+   (hypertrace-stager-tests stager)))
+
 
 ;;
 ;; Make a HyperTrace stager record initializer out of the record with the
