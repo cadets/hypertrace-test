@@ -39,6 +39,9 @@
     (no-stagers) #:none               "Don't import any stagers.")
 
    (args:make-option
+    (use-tmpfs)  #:none               "Use tmpfs to save the report.")
+
+   (args:make-option
     (h help)     #:none               "Display this help text"
     (usage))))
 
