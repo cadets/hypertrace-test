@@ -25,14 +25,21 @@
       (fmt-red str)
       str))
 
-(define (hypertrace-test-run name fst snd)
+(define (runt name fst snd)
   (if (equal? fst snd)
       (begin
         (when (>= hypertrace-test-verbosity 1)
-          (fmt #t "[  " (successfmt "OK") "  ]  " name nl)))
+          (fmt #t "[  " (successfmt "OK") "  ]  " name nl))
+
+        ;; Return the test as pass.
+        `#(,current-stager ,name 'pass))
+        
       (begin
         (when (>= hypertrace-test-verbosity 1)
-          (fmt #f "[ " (failfmt "FAIL") " ]  " name nl)))))
+          (fmt #f "[ " (failfmt "FAIL") " ]  " name nl))
+
+        ;; Return the test as fail.
+        `#(,current-stager ,name 'fail))))
 
 
 ;;
@@ -48,7 +55,7 @@
          (expected-out (hypertrace-test-expected-out test))
          (cmp-method   (hypertrace-test-cmp-method test))
          (run-method   (hypertrace-test-run-method test)))
-    (hypertrace-test-run name #t #t)))
+    (runt name #t #t)))
 
 
 ;;
@@ -88,23 +95,25 @@
                 (let ((errors (read-buffered stderr)))
                   (when (not (equal? errors ""))
                     (print "stderr (" in-file "): " errors))))
-              (hypertrace-test-run name #t #f))
+              (runt name #t #f))
             
             ;; Check the process stdout with our expected output.
-            (let ((contents (read-line stdout))
-                  (errors   (read-buffered stderr)))
-                ;;
-                ;; If we don't have an expected-out path, that means we only
-                ;; want to compare the exit status of the executable we are
-                ;; running.
-                ;;
-                (if (equal? expected-out #f)
-                    (hypertrace-test-run name 0 status)
-                    (hypertrace-test-run name expected-str contents))
+            (let* ((contents (read-line stdout))
+                   (errors   (read-buffered stderr))
+                   ;;
+                   ;; If we don't have an expected-out path, that means we only
+                   ;; want to compare the exit status of the executable we are
+                   ;; running.
+                   ;;
+                   (result (if (equal? expected-out #f)
+                               (runt name 0 status)
+                               (runt name expected-str contents))))
+              
                 (when (and (>= hypertrace-test-verbosity 2)
                            (not (equal? errors "")))
                   (print "stderr (" in-file "): " errors))
 
                 (close-input-port stdout)
                 (close-input-port stderr)
-                (close-output-port stdin)))))))
+                (close-output-port stdin)
+                result))))))
