@@ -15,7 +15,9 @@
     (lambda ()
       (print "Usage: " (car (argv)) " [options...]")
       (newline)
-      (print (args:usage hypertrace-options))
+      (print (parameterize ((args:width  40)
+                            (args:indent 5))
+               (args:usage hypertrace-options)))
       (print "Report bugs to <ds815@gmx.com> or <ds815@cam.ac.uk>")))
   (exit 1))
 
