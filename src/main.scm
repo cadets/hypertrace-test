@@ -4,9 +4,11 @@
         test
         args
         srfi-1
-        (hypertrace util))
+        (hypertrace util)
+        (hypertrace reporters))
 
 (declare (uses hypertrace-util))
+(declare (uses hypertrace-reporters))
 (declare (uses hypertrace-test-runner))
 (declare (uses hypertrace-test))
 (declare (uses hypertrace-option-parser))
@@ -59,6 +61,13 @@
 
 (define hypertrace-test-tmp? #f)
 
+
+;;
+;; Default hypertrace report path.
+;;
+
+(define hypertrace-report-path #f)
+
 ;;
 ;; Main entry point of the program.
 ;;
@@ -97,12 +106,16 @@
                (alist-ref 'bare options))
       (print "Running tests in bare mode..."))
 
+    (set! hypertrace-report-path
+      (or (alist-ref 'report-path options) "hypertrace-test.report"))
+    
     (set! hypertrace-test-tmp?
       (or (alist-ref 'use-tmpfs options) #f))
 
-    (let ((report (alist-ref 'report options)))
+    (let* ((report      (alist-ref 'report options))
+           (report-path hypertrace-report-path))
       (when report
-        (with-loaded-contents report results
+        (with-loaded-contents report-path results
           (let* ((pass-and-fail
                   (fold
                    (lambda (result buckets)
@@ -127,6 +140,11 @@
                    (list '() '()) results))
                  (pass (car pass-and-fail))
                  (fail (cadr pass-and-fail)))
+            (cond
+             ((equal? report "html")  (report-html  pass fail))
+             ((equal? report "json")  (report-json  pass fail))
+             ((equal? report "junit") (report-junit pass fail))
+             ((equal? report "text")  (report-text  pass fail)))
             (exit 0)))))
       
     (test-group "Field tests"
