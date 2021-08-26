@@ -7,6 +7,6 @@ MODULE := util
 .PHONY: all
 
 all:
-	@echo "CSC    $(MODULE).scm"
+	@echo "CSC  [M]   $(MODULE).scm"
 	@$(CSC) -c -J $(CSC_FLAGS) $(MODULE).scm -o $(BUILD_DIR)/$(MODULE).o
 
