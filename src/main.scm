@@ -129,7 +129,9 @@
                             (print "Expected 'pass' or 'fail', but got " p-or-f)
                             (exit 1))))))
                    (list '() '()) results))
-                 (pass (car pass-and-fail))
+                 (pass (if (alist-ref 'only-failed options)
+                           '()
+                           (car pass-and-fail)))
                  (fail (cadr pass-and-fail)))
             (cond
              ((equal? report "html")  (report-html  pass fail))
