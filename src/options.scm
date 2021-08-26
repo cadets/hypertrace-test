@@ -57,6 +57,10 @@
     "Path to the report file.")
 
    (args:make-option
+    (only-failed)   #:none
+    "Report only failed tests.")
+
+   (args:make-option
     (h help)        #:none
     "Display this help text"
     (usage))))
