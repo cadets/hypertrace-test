@@ -1,5 +1,7 @@
-CSC := $(shell which csc || which csc5)
+CSC := $(shell which csc 2> /dev/null || which csc5 2> /dev/null)
 CSC_FLAGS = -O3
+
+INSTALL := $(shell which install 2>/dev/null)
 
 PROGRAM := hypertrace-test
 
@@ -9,6 +11,8 @@ LIBEXEC_DIR := $(BUILD_DIR)/libexec
 LIBEXEC_HYPERTRACE := $(LIBEXEC_DIR)/hypertrace-test
 STAGERS_DIR := $(LIBEXEC_HYPERTRACE)/tests
 STAGERS_SRCDIR := stagers
+
+DESTDIR := $(if $(DESTDIR),$(DESTDIR),/usr/local)
 
 SRC_DIR := src
 
@@ -74,3 +78,12 @@ clean:
 
 cleandir distclean realclean: clean
 
+install:
+	@echo "INSTALL    $(DESTDIR)"
+	@$(INSTALL) -d $(DESTDIR)
+	@echo "INSTALL    $(DESTDIR)/libexec"
+	@cp -r $(LIBEXEC_DIR) $(DESTDIR)/libexec
+	@echo "INSTALL    $(DESTDIR)/bin"
+	@$(INSTALL) -d $(DESTDIR)/bin
+	@echo "INSTALL    $(PROGRAM)"
+	@$(INSTALL) $(BIN_DIR)/$(PROGRAM) $(DESTDIR)/bin
