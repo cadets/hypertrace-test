@@ -24,52 +24,52 @@ STAGERS_DSTS := $(patsubst %.scm,$(STAGERS_DIR)/%.scm,$(STAGERS_SRCS))
 .PHONY: $(MODULE_DIR) move_imports $(STAGERS_DIR) move_tests clean cleandir distclean realclean
 
 $(PROGRAM): $(OBJS) $(STAGERS_DIR) $(STAGERS_DSTS) $(BIN_DIR) move_tests
-	@echo "LD     $(PROGRAM)"
+	@echo "LD         $(PROGRAM)"
 	@$(CSC) $(CSC_FLAGS) $(shell find $(BUILD_DIR) -name '*.o') -o $(BIN_DIR)/$(PROGRAM)
 
 $(BUILD_DIR)/%.o : $(SRC_DIR)/%.scm | $(MODULE_DIR) move_imports
-	@echo "CSC    $<"
+	@echo "CSC        $<"
 	@$(CSC) -c $(CSC_FLAGS) $< -o $@
 
 $(MODULE_DIR): $(BUILD_DIR)
 	@$(MAKE) -C $@
 
 move_imports: $(MODULE_DIR)
-	@echo "MOVE   imports"
+	@echo "MOVE       imports"
 	@$(shell find modules -name '*import.scm' -exec mv -f {} . \;)
 
 move_tests: $(STAGERS_DIR)
-	@echo "MOVE   tests"
+	@echo "MOVE       tests"
 	@$(shell find tests -mindepth 1 -maxdepth 1 -type d -exec cp -Rp {} $(STAGERS_DIR) \;)
 
 $(STAGERS_DIR)/%.scm : $(STAGERS_SRCDIR)/%.scm $(STAGERS_DIR)
-	@echo "CP     $<"
+	@echo "CP         $<"
 	@cp $< $@
 
 $(BUILD_DIR):
-	@echo "MK     $(BUILD_DIR)"
+	@echo "MK         $(BUILD_DIR)"
 	@mkdir -p $(BUILD_DIR)
 
 $(BIN_DIR): $(BUILD_DIR)
-	@echo "MK     $(BIN_DIR)"
+	@echo "MK         $(BIN_DIR)"
 	@mkdir -p $(BIN_DIR)
 
 $(LIBEXEC_DIR): $(BUILD_DIR)
-	@echo "MK     $(LIBEXEC_DIR)"
+	@echo "MK         $(LIBEXEC_DIR)"
 	@mkdir -p $(LIBEXEC_DIR)
 
 $(LIBEXEC_HYPERTRACE): $(LIBEXEC_DIR)
-	@echo "MK     $(LIBEXEC_HYPERTRACE)"
+	@echo "MK         $(LIBEXEC_HYPERTRACE)"
 	@mkdir -p $(LIBEXEC_HYPERTRACE)
 
 $(STAGERS_DIR): $(LIBEXEC_HYPERTRACE)
-	@echo "MK     $(STAGERS_DIR)"
+	@echo "MK         $(STAGERS_DIR)"
 	@mkdir -p $(STAGERS_DIR)
 
 clean:
-	@echo "RM     $(BUILD_DIR)"
+	@echo "RM         $(BUILD_DIR)"
 	@rm -rf $(BUILD_DIR)
-	@echo "CLEAN  imports"
+	@echo "CLEAN      imports"
 	@rm -f *import.scm
 
 cleandir distclean realclean: clean
