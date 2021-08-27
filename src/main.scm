@@ -110,17 +110,18 @@
           (let* ((pass-and-fail
                   (fold
                    (lambda (result buckets)
-                     (let ((stager (vector-ref result 0))
-                           (name   (vector-ref result 1))
-                           (p-or-f (vector-ref result 2)))
+                     (let ((stager  (vector-ref result 0))
+                           (name    (vector-ref result 1))
+                           (p-or-f  (vector-ref result 2))
+                           (t       (vector-ref result 3)))
                        (case p-or-f
                          ;; Prepend to pass list.
-                         ('pass `(,(cons `(,stager ,name) (car buckets))
+                         ('pass `(,(cons `(,stager ,name ,t) (car buckets))
                                   ,(cadr buckets)))
                          
                          ;; Prepend to fail list.
                          ('fail `(,(car buckets)
-                                  ,(cons `(,stager ,name) (cadr buckets))))
+                                  ,(cons `(,stager ,name ,t) (cadr buckets))))
 
                          ;; We hit some *really* weird case, so we just bail out
                          ;; of the program all together with an exit code of 1.
@@ -128,7 +129,7 @@
                           (begin
                             (print "Expected 'pass' or 'fail', but got " p-or-f)
                             (exit 1))))))
-                   (list '() '()) results))
+                   (list '() '() '()) results))
                  (pass (if (alist-ref 'only-failed options)
                            '()
                            (car pass-and-fail)))
