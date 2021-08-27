@@ -8,6 +8,7 @@
         (chicken process)
         (chicken base)
         (chicken io)
+        (chicken time)
         
         srfi-1
         
@@ -25,21 +26,24 @@
       (fmt-red str)
       str))
 
-(define (runt name fst snd)
-  (if (equal? fst snd)
-      (begin
-        (when (>= hypertrace-test-verbosity 1)
-          (fmt #t "[  " (successfmt "OK") "  ]  " name nl))
+(define (runt name fst snd elapsed)
+  (let ((elapsed-s (/ elapsed 1000.0)))
+    (if (equal? fst snd)
+        (begin
+          (when (>= hypertrace-test-verbosity 1)
+            (fmt #t "[  " (successfmt "OK") "  ]  " name
+                 "  [  " elapsed-s "s  ]" nl))
 
-        ;; Return the test as pass.
-        `#(,current-stager ,name pass))
+          ;; Return the test as pass.
+          `#(,current-stager ,name pass))
         
-      (begin
-        (when (>= hypertrace-test-verbosity 1)
-          (fmt #f "[ " (failfmt "FAIL") " ]  " name nl))
+        (begin
+          (when (>= hypertrace-test-verbosity 1)
+            (fmt #f "[ " (failfmt "FAIL") " ]  " name
+                 "  [  " elapsed-s  "s  ]" nl))
 
-        ;; Return the test as fail.
-        `#(,current-stager ,name fail))))
+          ;; Return the test as fail.
+          `#(,current-stager ,name fail)))))
 
 
 ;;
@@ -55,7 +59,7 @@
          (expected-out (hypertrace-test-expected-out test))
          (cmp-method   (hypertrace-test-cmp-method test))
          (run-method   (hypertrace-test-run-method test)))
-    (runt name #t #t)))
+    (runt name #t #t 0)))
 
 
 ;;
@@ -76,44 +80,49 @@
          (expected-str (read-file expected-out)))
     ;; Spawn the process and grab its ports.
     (receive (stdout stdin pid stderr) (process* in-file)
-      ;; Wait for the process to end.
-      (receive (exit-pid success? status) (process-wait pid)
-        ;;
-        ;; If we get an exit of a pid that we weren't waiting for, this is
-        ;; probably a bug in the library. We just want to hard fail here and
-        ;; report a bug...
-        ;;
-        (when (not (= pid exit-pid))
-          (print "ERROR: Waited on " pid " but got " exit-pid ". Exiting.")
-          (exit 1))
-        
-        (if (not success?)
-            ;; Fail the test and report and error if verbosity is >= 2.
-            (begin
-              (when (>= hypertrace-test-verbosity 2)
-                (print "ERROR: Child process exited with exit code: " status)
-                (let ((errors (read-buffered stderr)))
-                  (when (not (equal? errors ""))
-                    (print "stderr (" in-file "): " errors))))
-              (runt name #t #f))
+      ;; Get the start timestamp.
+      (let ((start (current-milliseconds)))
+        ;; Wait for the process to end.
+        (receive (exit-pid success? status) (process-wait pid)
+          ;; Compute elapsed time.
+          (let* ((end     (current-milliseconds))
+                 (elapsed (- end start)))
+            ;;
+            ;; If we get an exit of a pid that we weren't waiting for, this is
+            ;; probably a bug in the library. We just want to hard fail here and
+            ;; report a bug...
+            ;;
+            (when (not (= pid exit-pid))
+              (print "ERROR: Waited on " pid " but got " exit-pid ". Exiting.")
+              (exit 1))
             
-            ;; Check the process stdout with our expected output.
-            (let* ((contents (read-line stdout))
-                   (errors   (read-buffered stderr))
-                   ;;
-                   ;; If we don't have an expected-out path, that means we only
-                   ;; want to compare the exit status of the executable we are
-                   ;; running.
-                   ;;
-                   (result (if (equal? expected-out #f)
-                               (runt name 0 status)
-                               (runt name expected-str contents))))
-              
-                (when (and (>= hypertrace-test-verbosity 2)
-                           (not (equal? errors "")))
-                  (print "stderr (" in-file "): " errors))
+            (if (not success?)
+                ;; Fail the test and report and error if verbosity is >= 2.
+                (begin
+                  (when (>= hypertrace-test-verbosity 2)
+                    (print "ERROR: Child process exited with exit code: " status)
+                    (let ((errors (read-buffered stderr)))
+                      (when (not (equal? errors ""))
+                        (print "stderr (" in-file "): " errors))))
+                  (runt name #t #f elapsed))
+                
+                ;; Check the process stdout with our expected output.
+                (let* ((contents (read-line stdout))
+                       (errors   (read-buffered stderr))
+                       ;;
+                       ;; If we don't have an expected-out path, that means we only
+                       ;; want to compare the exit status of the executable we are
+                       ;; running.
+                       ;;
+                       (result (if (equal? expected-out #f)
+                                   (runt name 0 status elapsed)
+                                   (runt name expected-str contents elapsed))))
+                  
+                  (when (and (>= hypertrace-test-verbosity 2)
+                             (not (equal? errors "")))
+                    (print "stderr (" in-file "): " errors))
 
-                (close-input-port stdout)
-                (close-input-port stderr)
-                (close-output-port stdin)
-                result))))))
+                  (close-input-port stdout)
+                  (close-input-port stderr)
+                  (close-output-port stdin)
+                  result))))))))
