@@ -35,7 +35,7 @@
                  "  [  " elapsed-s "s  ]" nl))
 
           ;; Return the test as pass.
-          `#(,current-stager ,name pass))
+          `#(,current-stager ,name pass ,elapsed-s))
         
         (begin
           (when (>= hypertrace-test-verbosity 1)
@@ -43,7 +43,7 @@
                  "  [  " elapsed-s  "s  ]" nl))
 
           ;; Return the test as fail.
-          `#(,current-stager ,name fail)))))
+          `#(,current-stager ,name fail ,elapsed-s)))))
 
 
 ;;
