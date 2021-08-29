@@ -4,10 +4,20 @@
         srfi-1)
 
 
+;;
+;; Calculates the number of digits for a number 'n'.
+;;
+
 (define (number-of-digits n)
   (if (< n 10)
       1
       (+ 1 (number-of-digits (/ n 10)))))
+
+
+;;
+;; Generates a text report of passed and failed tests. If ANSI colors are
+;; supported, it further pretty-prints using colors and bold text.
+;;
 
 (define (generate-text-report passed failed ansi-colors?)
   ;; Report passed tests.
