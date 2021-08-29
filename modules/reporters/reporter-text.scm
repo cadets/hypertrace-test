@@ -4,10 +4,10 @@
         srfi-1)
 
 
-(define (calculate-decimals n)
+(define (number-of-digits n)
   (if (< n 10)
       1
-      (+ 1 (calculate-decimals (/ n 10)))))
+      (+ 1 (number-of-digits (/ n 10)))))
 
 (define (generate-text-report passed failed ansi-colors?)
   ;; Report passed tests.
@@ -28,7 +28,7 @@
             (let* ((stager (car test-p))
                    (test   (cadr test-p))
                    (time   (caddr test-p))
-                   (n-dec  (calculate-decimals time)))
+                   (n-dec  (number-of-digits time)))
               (fmt #t stager ":  " test (space-to 103) " [  "
                    (space-to (- 112 n-dec)) time "s" (space-to 119) "]" nl)
               (+ time total-time)))
@@ -60,7 +60,7 @@
               (let* ((stager (car test-f))
                      (test   (cadr test-f))
                      (time   (caddr test-f))
-                     (n-dec  (calculate-decimals time)))
+                     (n-dec  (number-of-digits time)))
                 (fmt #t stager ":  " test (space-to 103) " [  "
                      (space-to (- 112 n-dec)) time "s" (space-to 119) "]" nl)
                 (+ time total-time)))
